@@ -1,74 +1,80 @@
-const express = require('express');
-const { Sequelize, DataTypes} = require('sequelize');
-const coordinates = require('./coordinates.js')
+const express = require("express");
+const { Sequelize, DataTypes } = require("sequelize");
+const coordinates = require("./coordinates.js");
 
 const app = express();
 const port = 3000;
 
+app.use(express.static("public"));
 
 const sequelize = new Sequelize({
-    dialect: 'postgres',
-    database: 'ymaps',
-    user: 'postgres',
-    password: 'NbGfYt642',
-    host: 'localhost',
-    port: 5432,
-    ssl: true,
-    clientMinMessages: 'notice',
-  });
-
-// const sequelize = new Sequelize('postgres://postgres:NbGfYt642@localhost:5432/ymaps')
-
-const Marker = sequelize.define('Marker', {
-    lng: {
-      type: DataTypes.FLOAT,
-      allowNull: false
-    },
-    ltd: {
-        type: DataTypes.FLOAT,
-      allowNull: false,
-      
-    },
-    desc: {
-        type: DataTypes.STRING
-    }
-  });
-  
-const User = sequelize.define('User', {
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: false
-    },
-    geo: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    }
-  });
-
-  User.hasMany(Marker, { onDelete: "cascade" }); 
-
-
-
-app.get('/coordinates', (req, res) => {
-    res.json(coordinates);
+  dialect: "postgres",
+  database: "ymaps",
+  user: "alexey",
+  password: "NbGfYt642",
+  host: "localhost",
+  port: 5432,
+  ssl: true,
+  clientMinMessages: "notice",
 });
 
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+const Markers = sequelize.define("markers", {
+  ltd: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  lng: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  desc: {
+    type: DataTypes.STRING,
+  },
+  pathId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
+const Users = sequelize.define("users", {
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: false,
+  },
+  geo: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+});
 
+Users.hasMany(Markers, { onDelete: "cascade" });
 
+app.get("/coordinates", async (req, res) => {
+  try {
+    const markers = await Markers.findAll();
+    res.json(markers);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ error: "Ошибка сервера" });
+  }
+  // res.json(coordinates)
+});
 
+app.get("/", async (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
 
 sequelize.sync();
 
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-})
+  console.log(`Server running on http://localhost:${port}`);
+});

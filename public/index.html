@@ -3,131 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <title>YMaps v3 with Node.js</title>
+    <link rel="stylesheet" href="style.css" />
     <script
       src="https://api-maps.yandex.ru/2.1/?apikey=6e172ff2-4698-4126-8b89-e73d4c14338c&lang=ru_RU&coordorder=latlong"
       type="text/javascript"
     ></script>
   </head>
   <body>
-    <div id="map" style="width: 600px; height: 400px"></div>
-    <div id="dropdown">
-      <select id="markerSelector">
-        <option value="nothing">---</option>
-        <option value="marker1">Чеховские места</option>
-        <option value="marker2">Marker 2</option>
-      </select>
-    </div>
+    <main>
+      <div id="map"></div>
+      <div id="right_side">
+        <div id="user_info">
 
-    <script>
-      fetch("/coordinates")
-        .then((response) => response.json())
-        .then((coordinates) => {
-          ymaps.ready(init);
+        </div>
+        <div id="selector">
+          <div id="first">
+            <input type="checkbox" id="checkbox1" name="checkbox" value="0" />
+            <label for="checkbox1">Чеховские места</label>
+          </div>
+          <div id="second">
+            <input type="checkbox" id="checkbox2" name="checkbox" value="1" />
+            <label for="checkbox2">Маркер2</label>
+          </div>
+          <div id="third">
+            <input type="checkbox" id="checkbox3" name="checkbox" value="2" />
+            <label for="checkbox3">Маркер3</label>
+          </div>
+          <div id="fourth">
+            <input type="checkbox" id="checkbox4" name="checkbox" value="3" />
+            <label for="checkbox4">Маркер4</label>
+          </div>
+        </div>
+      </div>
+    </main>
 
-          function init() {
-            var coords = [55.753215, 37.622504]; // Координаты для геокодирования
-            var geocoder = new ymaps.geocode(coords);
-
-            // Выполняем геокодирование
-            geocoder.then(
-                function (res) {
-                    // Получаем первый результат геокодирования
-                    var firstGeoObject = res.geoObjects.get(0);
-
-                    // Получаем адрес места по координатам
-                    var address = firstGeoObject.getAddressLine();
-
-                    // Выводим адрес на консоль или в другое место на вашей веб-странице
-                    console.log('Адрес места:', address);
-                },
-                function (err) {
-                    // В случае ошибки выводим сообщение об ошибке
-                    console.error('Ошибка геокодирования:', err);
-                }
-            );
-            var myMap = new ymaps.Map("map", {
-              center: [47.210179, 38.930721],
-              zoom: 14,
-            });
-            var collections = [];
-
-            for (var i = 0; i < coordinates.length; i++) {
-              var myCollection = new ymaps.GeoObjectCollection(
-                {},
-                {
-                  preset: "islands#redDotIcon", //все метки красные
-                  visible: false,
-                }
-              );
-              for (var j = 0; j < coordinates[i].length; j++) {
-                myCollection.add(
-                  new ymaps.Placemark(
-                    [coordinates[i][j].lat, coordinates[i][j].lng],
-                    {
-                      hintContent: coordinates[i][j].desc,
-                    }
-                  )
-                );
-              }
-              collections.push(myCollection);
-              myMap.geoObjects.add(myCollection);
-            }
-            document
-              .getElementById("markerSelector")
-              .addEventListener("change", function () {
-                var selectedValue = this.value;
-                if (selectedValue === "nothing") {
-                  for (var i = 0; i < collections.length; i++) {
-                    collections[i].options.set("visible", false);
-                  }
-                } else if (selectedValue === "marker1") {
-                  for (var i = 0; i < collections.length; i++) {
-                    collections[i].options.set("visible", false);
-                  }
-                  collections[0].options.set("visible", true);
-                } else if (selectedValue === "marker2") {
-                  for (var i = 0; i < collections.length; i++) {
-                    collections[i].options.set("visible", false);
-                  }
-                  collections[1].options.set("visible", true);
-                }
-              });
-            var placemark;
-            myMap.events.add("click", function (e) {
-              var coords = e.get("coords"); // Получаем координаты точки клика
-
-              ymaps.geocode(coords).then(function (res) {
-                // Получаем первый результат геокодирования
-                var firstGeoObject = res.geoObjects.get(0);
-
-                // Получаем адрес места по координатам
-                var address = firstGeoObject.getAddressLine();
-
-                // Выводим адрес на консоль или в другое место на вашем веб-странице
-                console.log("Адрес места:", address);
-              });
-
-              if (placemark) {
-                myMap.geoObjects.remove(placemark);
-              }
-
-              placemark = new ymaps.Placemark(
-                coords,
-                {},
-                {
-                  preset: "islands#blueDotIcon", // Предустановленный стиль метки
-                  draggable: true, // Разрешаем перетаскивание метки
-                }
-              );
-
-              // Добавляем метку на карту
-              myMap.geoObjects.add(placemark);
-            });
-          }
-        })
-        .catch((error) =>
-          console.error("Ошибка при получении координат:", error)
-        );
-    </script>
+    <script src="script.js"></script>
   </body>
 </html>

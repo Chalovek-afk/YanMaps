@@ -13,7 +13,6 @@
     "@sequelize/postgres": "^7.0.0-alpha.40",
     "express": "^4.19.2",
     "http-server": "14.1.1",
-    "nodemon": "^3.1.0",
     "sequelize": "^6.37.3",
     "ymaps": "^0.2.1"
   }
