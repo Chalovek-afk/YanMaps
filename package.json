@@ -1,0 +1,20 @@
+{
+  "name": "yanmaps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx http-server ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sequelize/postgres": "^7.0.0-alpha.40",
+    "express": "^4.19.2",
+    "http-server": "14.1.1",
+    "nodemon": "^3.1.0",
+    "sequelize": "^6.37.3",
+    "ymaps": "^0.2.1"
+  }
+}
