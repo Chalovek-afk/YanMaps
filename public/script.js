@@ -1,3 +1,10 @@
+const colors = [
+  "islands#redDotIcon",
+  "islands#blueDotIcon",
+  "islands#darkGreenDotIcon",
+  "islands#yellowDotIcon",
+];
+
 function getCheckedValues() {
   var checkboxes = document.getElementsByName("checkbox");
   var checkedValues = [];
@@ -8,6 +15,43 @@ function getCheckedValues() {
   });
   return checkedValues;
 }
+
+document.getElementById("first").addEventListener("click", function (event) {
+  if (event.target.id === "first") {
+    var checkbox = document.getElementById("checkbox1");
+    checkbox.checked = !checkbox.checked;
+    var selector = document.getElementById("selector");
+    selector.dispatchEvent(new Event("change")); // Вызов события change
+  }
+});
+
+document.getElementById("second").addEventListener("click", function (event) {
+  if (event.target.id === "second") {
+    var checkbox = document.getElementById("checkbox2");
+    checkbox.checked = !checkbox.checked;
+    var selector = document.getElementById("selector");
+    selector.dispatchEvent(new Event("change")); // Вызов события change
+  }
+});
+
+document.getElementById("third").addEventListener("click", function (event) {
+  if (event.target.id === "third") {
+    var checkbox = document.getElementById("checkbox3");
+    checkbox.checked = !checkbox.checked;
+    var selector = document.getElementById("selector");
+    selector.dispatchEvent(new Event("change")); // Вызов события change
+  }
+});
+
+document.getElementById("fourth").addEventListener("click", function (event) {
+  if (event.target.id === "fourth") {
+    var checkbox = document.getElementById("checkbox4");
+    checkbox.checked = !checkbox.checked;
+    var selector = document.getElementById("selector");
+    selector.dispatchEvent(new Event("change")); // Вызов события change
+  }
+});
+
 fetch("/coordinates")
   .then((response) => response.json())
   .then((coordinates) => {
@@ -31,7 +75,7 @@ fetch("/coordinates")
           var myCollection = new ymaps.GeoObjectCollection(
             {},
             {
-              preset: "islands#redDotIcon", //все метки красные
+            //   preset: "islands#redDotIcon", //все метки красные
               visible: false,
             }
           );
@@ -44,19 +88,27 @@ fetch("/coordinates")
           collections.push(myCollection);
         }
       }
-      myMap.geoObjects.add(myCollection);
+      console.log(collections[0].getLength())
+      console.log(collections[1].getLength())
+      for (let i = 0; i < collections.length; i++) {
+        collections[i].options.set("preset", colors[i]);
+        myMap.geoObjects.add(collections[i]);
+      }
 
       document
         .getElementById("selector")
         .addEventListener("change", function () {
           var values = getCheckedValues();
+          console.log(values)
           for (var i = 0; i < collections.length; i++) {
             collections[i].options.set("visible", false);
           }
           for (index of values) {
+            console.log(collections[+index])
             collections[+index].options.set("visible", true);
           }
         });
+
       var placemark;
       myMap.events.add("click", function (e) {
         var coords = e.get("coords"); // Получаем координаты точки клика
@@ -80,7 +132,7 @@ fetch("/coordinates")
           coords,
           {},
           {
-            preset: "islands#blueDotIcon", // Предустановленный стиль метки
+            preset: "islands#yellowDotIcon", // Предустановленный стиль метки
             draggable: true, // Разрешаем перетаскивание метки
           }
         );

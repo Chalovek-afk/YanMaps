@@ -66,7 +66,6 @@ app.get("/coordinates", async (req, res) => {
     console.log(e);
     res.status(500).json({ error: "Ошибка сервера" });
   }
-  // res.json(coordinates)
 });
 
 app.get("/", async (req, res) => {
