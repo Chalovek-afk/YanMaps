@@ -75,7 +75,6 @@ fetch("/coordinates")
           var myCollection = new ymaps.GeoObjectCollection(
             {},
             {
-            //   preset: "islands#redDotIcon", //все метки красные
               visible: false,
             }
           );
@@ -88,8 +87,6 @@ fetch("/coordinates")
           collections.push(myCollection);
         }
       }
-      console.log(collections[0].getLength())
-      console.log(collections[1].getLength())
       for (let i = 0; i < collections.length; i++) {
         collections[i].options.set("preset", colors[i]);
         myMap.geoObjects.add(collections[i]);
@@ -99,12 +96,10 @@ fetch("/coordinates")
         .getElementById("selector")
         .addEventListener("change", function () {
           var values = getCheckedValues();
-          console.log(values)
           for (var i = 0; i < collections.length; i++) {
             collections[i].options.set("visible", false);
           }
           for (index of values) {
-            console.log(collections[+index])
             collections[+index].options.set("visible", true);
           }
         });

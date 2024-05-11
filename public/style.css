@@ -1,86 +1,144 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 #map {
-    width: 50vw;
-    height: 100vh
+  width: 50vw;
+  height: 100vh;
 }
 
 main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 #user_info {
-    height: 15vh;
-    width: 100%;
-    border: 1px solid black;
+  height: 15vh;
+  width: 100%;
+  border: 1px solid black;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  align-content: end;
+  justify-content: end;
+  text-align: right;
+  padding-top: 1%;
+}
+
+#user_info div {
+  margin: 20px;
+}
+
+#user_info div a {
+  padding: 8px 15px;
+  background-color: #04aa6d;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+  text-decoration: none;
+}
+
+#username {
+  font-size: 32px;
 }
 
 #selector {
-    height: 85vh;
-    width: 100%; 
-    display: block;  
-    text-align: center;
-    font-size: 28px;
+  height: 85vh;
+  width: 100%;
+  display: block;
+  text-align: center;
+  font-size: 28px;
 }
 
 #selector div {
-    border: 1px solid black;
-    height: 20.95vh;
-
+  border: 1px solid black;
+  height: 20.72vh;
 }
 
 #selector div input {
-    transform:scale(1.5);
+  transform: scale(1.5);
 }
 
 #selector div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 label {
-    margin-left: 2%;
+  margin-left: 2%;
 }
 
 #first:hover {
-    background-color: rgba(255, 0, 43, 0.5);
+  background-color: rgba(255, 0, 43, 0.5);
 }
 
 #first {
-    background-color: rgba(255, 0, 43, 0.3);
+  background-color: rgba(255, 0, 43, 0.3);
 }
 
-
 #second:hover {
-    background-color: rgba(25, 0, 255, 0.5);
+  background-color: rgba(25, 0, 255, 0.5);
 }
 
 #second {
-    background-color: rgba(25, 0, 255, 0.3);
+  background-color: rgba(25, 0, 255, 0.3);
 }
 
 #third:hover {
-    background-color: rgba(0, 255, 64, 0.5);
+  background-color: rgba(0, 255, 64, 0.5);
 }
 
 #third {
-    background-color: rgba(0, 255, 64, 0.3);
+  background-color: rgba(0, 255, 64, 0.3);
 }
 
-
 #fourth:hover {
-    background-color: rgba(255, 217, 0, 0.5);
+  background-color: rgba(255, 217, 0, 0.5);
 }
 
 #fourth {
-    pointer-events: none;
-    filter: blur(3px);
-    background-color: rgba(255, 217, 0, 0.3);
+  pointer-events: none;
+  filter: blur(3px);
+  background-color: rgba(255, 217, 0, 0.3);
 }
 
+#out {
+  padding: 8px 15px;
+  background-color: #04aa6d;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+  text-decoration: none;
+}
 
+button[type="submit"] {
+  background-color: #04aa6d;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 6px;
+  font-size: 16px;
+  margin: 20px;
+  cursor: pointer;
+  margin-top: 1.5%;
+}
+
+button[type="submit"]:hover {
+  background-color: #026843;
+}
+
+form {
+    font-size: 20px;
+}
+form input[type=text]{
+    font-size: 18px;
+}
