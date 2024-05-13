@@ -8,51 +8,97 @@
   </head>
   <body>
     <main>
-      <div id="map"></div>
+      <div id="left_side">
+        <div id="map"></div>
+        <div id="button_wrapper">
+          <button>Рекомендации</button>
+          <button id="add_route">Добавить маршрут</button>
+        </div>
+      </div>
       <div id="right_side">
         <div id="user_info">
-          <div id="username">{{ username }}</div>
+          <div id="username">{{ name }} {{ surname }}<br>{{ addr }}</div>
           <div>
+            <a id="update" href="/upd">Редактировать профиль</a>
             <a id="out" href="/logout">Выход</a>
           </div>
         </div>
-        <div id="selector">
-          <div id="first">
+        <fieldset id="selector">
+          <div class="clickable">
             <input
-              type="checkbox"
+              type="radio"
+              class="check"
+              id="checkbox5"
+              name="radio"
+              value="5" />
+            <label for="checkbox5">Мои места</label>
+          </div>
+          <div class="clickable">
+            <input
+              type="radio"
               class="check"
               id="checkbox1"
-              name="checkbox"
-              value="0" />
+              name="radio"
+              value="1" />
             <label for="checkbox1">Чеховские места</label>
           </div>
-          <div id="second">
+          <div class="clickable">
             <input
-              type="checkbox"
+              type="radio"
               class="check"
               id="checkbox2"
-              name="checkbox"
-              value="1" />
+              name="radio"
+              value="2" />
             <label for="checkbox2">Музеи</label>
           </div>
-          <div id="third">
+          <div class="clickable">
             <input
-              type="checkbox"
+              type="radio"
               class="check"
               id="checkbox3"
-              name="checkbox"
-              value="2" />
+              name="radio"
+              value="3" />
             <label for="checkbox3">Активный отдых</label>
           </div>
-          <div id="fourth">
+          <div class="clickable">
             <input
-              type="checkbox"
+              type="radio"
               class="check"
               id="checkbox4"
-              name="checkbox"
-              value="3" />
-            <label for="checkbox4">Ваши места</label>
+              name="radio"
+              value="4" />
+            <label for="checkbox4">Рекомендации пользователей</label>
           </div>
+        </fieldset>
+      </div>
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <span class="close" id="closeModal">&times;</span>
+          <form
+            action="/create"
+            method="post"
+            id="new_mark">
+            <fieldset>
+              <legend>Добавьте свой маркер:</legend>
+              <select
+                id="mySelect"
+                class="minimal"
+                name="select">
+                <option value="1">Добавить в свои маршруты</option>
+                <option value="2">Добавить рекомендуемое место (будет видно всем)</option>
+              </select>
+              Адрес: <input
+                type="text"
+                name="addr"
+                id="addr">
+              Описание: <input
+                type="text"
+                name="desc"
+                id="desc">
+              <button type="submit" value="add">Добавить</button>
+            </fieldset>
+
+          </form>
         </div>
       </div>
     </main>

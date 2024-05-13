@@ -8,7 +8,7 @@
   </head>
   <body>
     <main>
-      <div id="map"></div>
+      <div id="map" style="height: 100vh;"></div>
       <div id="right_side">
         <div id="user_info">
           <form method="post">
@@ -27,47 +27,47 @@
           </div>
 
         </div>
-        <div id="selector">
-          <div id="first">
+        <fieldset id="selector">
+          <div class="clickable">
             <input
-              type="checkbox"
+              type="radio"
               class="check"
               id="checkbox1"
-              name="checkbox"
-              value="0" />
+              name="radio"
+              value="1" />
             <label for="checkbox1">Чеховские места</label>
           </div>
-          <div id="second">
+          <div class="clickable">
             <input
-              type="checkbox"
+              type="radio"
               class="check"
               id="checkbox2"
-              name="checkbox"
-              value="1" />
+              name="radio"
+              value="2" />
             <label for="checkbox2">Музеи</label>
           </div>
-          <div id="third">
+          <div class="clickable">
             <input
-              type="checkbox"
+              type="radio"
               class="check"
               id="checkbox3"
-              name="checkbox"
-              value="2" />
+              name="radio"
+              value="3" />
             <label for="checkbox3">Активный отдых</label>
           </div>
-          <div id="fourth">
+          <div class="clickable">
             <input
-              type="checkbox"
+              type="radio"
               class="check"
               id="checkbox4"
-              name="checkbox"
-              value="3" />
-            <label for="checkbox4">Ваши места</label>
+              name="radio"
+              value="4" />
+            <label for="checkbox4">Рекомендации пользователей</label>
           </div>
-        </div>
+        </fieldset>
       </div>
     </main>
 
-    <script src="script.js"></script>
+    <script src="lg.js"></script>
   </body>
 </html>
