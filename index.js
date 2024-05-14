@@ -1,17 +1,20 @@
-const express = require("express");
-const { Sequelize, DataTypes } = require("sequelize");
-const { Op } = require("sequelize");
-const bodyParser = require("body-parser");
-const coordinates = require("./coordinates.js");
-const session = require("express-session");
-var { Liquid } = require("liquidjs");
+import express from "express";
+import { Op } from "sequelize";
+import bodyParser from "body-parser";
+import session from "express-session";
+import { Liquid } from "liquidjs";
+import sequelize from "./config/db.js";
+import Markers from "./models/markers.js";
+import Users from "./models/users.js";
+import Review from "./models/review.js";
+
 var engine = new Liquid();
 
 const app = express();
 const port = 3000;
 
 app.engine("liquid", engine.express());
-app.set("views", "./public");
+app.set("views", "./public/views");
 app.set("view engine", "liquid");
 
 app.use(
@@ -29,109 +32,6 @@ app.use(
   })
 );
 
-const sequelize = new Sequelize({
-  dialect: "postgres",
-  database: "ymaps",
-  user: "alexey",
-  password: "NbGfYt642",
-  host: "localhost",
-  port: 5432,
-  ssl: true,
-  clientMinMessages: "notice",
-});
-
-const Rating = sequelize.define("rating", {
-  mark: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    validate: {
-      max: 5,
-      min: 1,
-    },
-  },
-});
-
-const Markers = sequelize.define("markers", {
-  ltd: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  lng: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  desc: {
-    type: DataTypes.STRING,
-  },
-  pathId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  address: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  rating: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  },
-  isPrivate: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-  },
-});
-
-const Users = sequelize.define("users", {
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: false,
-  },
-  geo: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  surname: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  isSuper: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
-  },
-});
-
-Users.hasMany(Markers, { onDelete: "cascade" });
-Markers.belongsTo(Users);
-Markers.hasMany(Rating, { onDelete: "cascade", foreignKey: Markers.rating });
-Rating.belongsTo(Markers);
-
-Rating.findAll({
-  attributes: [
-    "markerId", // Поле, по которому группируем
-    [sequelize.fn("AVG", sequelize.col("mark")), "averageRating"], // Вычисляем среднюю оценку
-  ],
-  group: ["markerId"],
-}).then((averages) => {
-  // Обновляем записи в таблице точек с средними оценками
-  averages.forEach((average) => {
-    Markers.update(
-      { rating: average.dataValues.averageRating },
-      { where: { id: average.dataValues.markerId } }
-    );
-  });
-});
-
 app.get("/coordinates", async (req, res) => {
   try {
     const user = await Users.findOne({
@@ -139,6 +39,9 @@ app.get("/coordinates", async (req, res) => {
     });
     try {
       const markers = await Markers.findAll({
+        order: [
+          ["id", "ASC"], // Замените 'propertyName' на свойство, по которому вы хотите отсортировать данные
+        ],
         where: {
           [Op.or]: [
             { [Op.and]: [{ userId: user.id }, { isPrivate: true }] },
@@ -154,6 +57,9 @@ app.get("/coordinates", async (req, res) => {
   } catch {
     try {
       const markers = await Markers.findAll({
+        order: [
+          ["id", "ASC"], // Замените 'propertyName' на свойство, по которому вы хотите отсортировать данные
+        ],
         where: {
           isPrivate: false,
         },
@@ -188,7 +94,7 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  req.session.user = "";
+  delete req.session.user;
   res.redirect("/login");
 });
 
@@ -227,6 +133,23 @@ app.get("/", auth, async (req, res) => {
       };
     }
     model["addr"] = user.geo;
+    Review.findAll({
+      attributes: [
+        "markerId", // Поле, по которому группируем
+        [sequelize.fn("AVG", sequelize.col("mark")), "averageRating"], // Вычисляем среднюю оценку
+      ],
+      group: ["markerId"],
+    }).then((averages) => {
+      // Обновляем записи в таблице точек с средними оценками
+      console.log(averages);
+      averages.forEach((average) => {
+        Markers.update(
+          { review: average.dataValues.averageRating },
+          { where: { id: average.dataValues.markerId } }
+        );
+      });
+    });
+1
     res.render("index", model);
   });
 });
@@ -264,7 +187,7 @@ app.post("/reg", async (req, res) => {
   res.redirect("/");
 });
 
-app.post("/create", async (req, res) => {
+app.post("/markers", async (req, res) => {
   const user = Users.findOne({ where: { username: req.session.user } })
     .then((res) => {
       const usId = res.id;
@@ -279,9 +202,37 @@ app.post("/create", async (req, res) => {
           isPrivate: true,
           rating: 0,
         });
+      } else {
+        Markers.create({
+          ltd: req.body.ltd,
+          lng: req.body.lng,
+          pathId: 4,
+          userId: usId,
+          desc: req.body.desc,
+          address: req.body.addr,
+          isPrivate: false,
+          rating: 0,
+        });
       }
     })
     .catch((err) => console.log(err));
+  res.redirect("/");
+});
+
+app.post("/review", async (req, res) => {
+  const user = Users.findOne({ where: { username: req.session.user } })
+    .then((res) => {
+      console.log(req.body);
+      const usId = res.id;
+      Review.create({
+        mark: req.body.mark,
+        text: req.body.text,
+        markerId: req.body.markerId,
+        userId: usId,
+      });
+    })
+    .catch((err) => console.log(err));
+  sequelize.sync();
   res.redirect("/");
 });
 

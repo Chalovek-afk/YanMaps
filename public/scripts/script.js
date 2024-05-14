@@ -1,3 +1,16 @@
+// Функция для закрытия модального окна
+function exitModal() {
+  document.getElementById("customModal").style.display = "none";
+  document.getElementById("delCont").remove();
+}
+
+// Закрываем модальное окно при клике вне его области
+window.onclick = function (event) {
+  if (event.target == document.getElementById("customModal")) {
+    exitModal();
+  }
+};
+
 function getCheckedValues() {
   var radios = document.getElementsByName("radio");
   var value;
@@ -9,10 +22,10 @@ function getCheckedValues() {
   return value;
 }
 
-var checks = document.querySelectorAll('.clickable')
-checks.forEach(check => {
-  check.addEventListener('click', (e) => {
-    var checkbox = e.target.querySelector('input')
+var checks = document.querySelectorAll(".clickable");
+checks.forEach((check) => {
+  check.addEventListener("click", (e) => {
+    var checkbox = e.target.querySelector("input");
     checkbox.checked = !checkbox.checked;
     var radios = document.querySelectorAll("input[type=radio]");
     radios.forEach((radio) => {
@@ -22,7 +35,6 @@ checks.forEach(check => {
     selector.dispatchEvent(new Event("change")); // Вызов события change
   });
 });
-
 
 closeModal.addEventListener("click", () => {
   modal.style.display = "none";
@@ -45,13 +57,14 @@ fetch("/coordinates")
         zoom: 14,
         controls: ["zoomControl", "fullscreenControl", "rulerControl"],
       });
-
+      
       // Функция для разделения массива на подмассивы по значению атрибута
       const dividedArray = coordinates.reduce((acc, obj) => {
         const key = obj["pathId"];
         (acc[key] = acc[key] || []).push(obj);
         return acc;
       }, {});
+      console.log(dividedArray)
       var collections = {};
 
       for (key of Object.keys(dividedArray)) {
@@ -63,18 +76,65 @@ fetch("/coordinates")
           }
         );
         for (elem of dividedArray[key]) {
-          collections[key].add(
-            new ymaps.Placemark([elem.ltd, elem.lng], {
-              hintContent: elem.desc,
-              balloonContent: elem.address,
-            })
-          );
+          let placemark = new ymaps.Placemark([elem.ltd, elem.lng], {
+            hintContent: `"${elem.desc}"\n${elem.address}`,
+            id: elem.id,
+          });
+          placemark.events.add("click", function (e) {
+            // Получаем ID метки
+            var id = e.get("target").properties.get("id");
+            // Открываем модальное окно с ID метки
+            document.getElementById("customModal").style.display = "block";
+            let place = document.querySelector(".custom-modal-content");
+            let cls = document.getElementById("mdlClose");
+            let cont = document.createElement("div");
+            cont.id = "delCont";
+            let site = document.createElement("p");
+            site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
+            let mark = document.createElement("p");
+            mark.textContent = `Рейтинг: ${coordinates[id].review}`;
+            cont.appendChild(site);
+            cont.appendChild(mark);
+            place.insertBefore(cont, cls);
+
+            var review_form = document.querySelector(".custom-modal-form");
+            review_form.addEventListener("submit", (e) => {
+              e.preventDefault();
+
+              var xhr = new XMLHttpRequest();
+              xhr.open("POST", "/review", true);
+              xhr.setRequestHeader("Content-Type", "application/json");
+              var dataToSend = {
+                mark: document.getElementById("rating").value,
+                text: document.getElementById("comment").value,
+                markerId: id,
+              };
+              xhr.send(JSON.stringify(dataToSend));
+              
+              document.getElementById("rating").value = 1;
+              document.getElementById("comment").value = '';
+              document.getElementById("delCont").remove();
+              var modal = document.getElementById("customModal");
+              modal.style.display = "none";
+              setTimeout(function() {
+                window.location.reload();
+              }, 500);
+            });
+          });
+          collections[key].add(placemark);
         }
         myMap.geoObjects.add(collections[key]);
       }
-      collections[
-        Object.keys(collections)[Object.keys(collections).length - 1]
-      ].options.set("preset", "islands#blueDotIcon");
+
+      if (
+        [1, 2, 3, 4].includes(
+          Object.keys(collections)[Object.keys(collections).length - 1]
+        )
+      ) {
+        collections[
+          Object.keys(collections)[Object.keys(collections).length - 1]
+        ].options.set("preset", "islands#blueDotIcon");
+      }
 
       document
         .getElementById("selector")
@@ -124,7 +184,7 @@ fetch("/coordinates")
         event.preventDefault();
         // Отправляем данные с помощью AJAX запроса
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/create", true);
+        xhr.open("POST", "/markers", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         var dataToSend = {
           isPrivate: document.getElementById("mySelect").value,
@@ -140,6 +200,7 @@ fetch("/coordinates")
         document.getElementById("addr").value = "";
         document.getElementById("desc").value = "";
         myMap.geoObjects.remove(placemark);
+        window.location.reload();
       });
 
       document.getElementById("add_route").addEventListener("click", () => {

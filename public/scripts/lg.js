@@ -8,11 +8,22 @@ function getCheckedValues() {
   });
   return value;
 }
+// Функция для закрытия модального окна
+function exitModal() {
+  document.getElementById("customModal").style.display = "none";
+  document.getElementById("delCont").remove();
+}
 
-var checks = document.querySelectorAll('.clickable')
-checks.forEach(check => {
-  check.addEventListener('click', (e) => {
-    var checkbox = e.target.querySelector('input')
+// Закрываем модальное окно при клике вне его области
+window.onclick = function (event) {
+  if (event.target == document.getElementById("customModal")) {
+    exitModal();
+  }
+};
+var checks = document.querySelectorAll(".clickable");
+checks.forEach((check) => {
+  check.addEventListener("click", (e) => {
+    var checkbox = e.target.querySelector("input");
     checkbox.checked = !checkbox.checked;
     var radios = document.querySelectorAll("input[type=radio]");
     radios.forEach((radio) => {
@@ -41,7 +52,6 @@ fetch("/coordinates")
         return acc;
       }, {});
       var collections = {};
-
       for (key of Object.keys(dividedArray)) {
         collections[key] = new ymaps.GeoObjectCollection(
           {},
@@ -51,12 +61,28 @@ fetch("/coordinates")
           }
         );
         for (elem of dividedArray[key]) {
-          collections[key].add(
-            new ymaps.Placemark([elem.ltd, elem.lng], {
-              hintContent: elem.desc,
-              balloonContent: elem.address,
-            })
-          );
+          let placemark = new ymaps.Placemark([elem.ltd, elem.lng], {
+            hintContent: `"${elem.desc}"\n${elem.address}`,
+            id: elem.id,
+          });
+          placemark.events.add("click", function (e) {
+            // Получаем ID метки
+            var id = e.get("target").properties.get("id");
+            // Открываем модальное окно с ID метки
+            document.getElementById("customModal").style.display = "block";
+            let place = document.querySelector(".custom-modal-content");
+            let cls = document.getElementById("mdlClose");
+            let cont = document.createElement("div");
+            cont.id = "delCont";
+            let site = document.createElement("p");
+            site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
+            let mark = document.createElement("p");
+            mark.textContent = `Рейтинг: ${coordinates[id].review}`;
+            cont.appendChild(site);
+            cont.appendChild(mark);
+            place.insertBefore(cont, cls);
+          });
+          collections[key].add(placemark)
         }
         myMap.geoObjects.add(collections[key]);
       }

@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>YMaps v3 with Node.js</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Туризм</title>
+    <link rel="stylesheet" href="styles/style.css" />
     <script src="https://api-maps.yandex.ru/2.1/?apikey=6e172ff2-4698-4126-8b89-e73d4c14338c&lang=ru_RU&coordorder=latlong" type="text/javascript"></script>
   </head>
   <body>
@@ -66,8 +66,20 @@
           </div>
         </fieldset>
       </div>
+
+
+
+      <div id="customModal" class="custom-modal">
+        <div class="custom-modal-content">
+          <span
+            onclick="exitModal()"
+            style="float: right; cursor: pointer;"
+            id="mdlClose">&times;</span>
+          </form>
+        </div>
+      </div>
     </main>
 
-    <script src="lg.js"></script>
+    <script src="scripts/lg.js"></script>
   </body>
 </html>

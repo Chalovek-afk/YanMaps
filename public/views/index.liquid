@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>YMaps v3 with Node.js</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Туризм</title>
+    <link rel="stylesheet" href="styles/style.css" />
     <script src="https://api-maps.yandex.ru/2.1/?apikey=6e172ff2-4698-4126-8b89-e73d4c14338c&lang=ru_RU&coordorder=latlong" type="text/javascript"></script>
   </head>
   <body>
@@ -75,7 +75,7 @@
         <div class="modal-content">
           <span class="close" id="closeModal">&times;</span>
           <form
-            action="/create"
+            action="/markers"
             method="post"
             id="new_mark">
             <fieldset>
@@ -84,7 +84,7 @@
                 id="mySelect"
                 class="minimal"
                 name="select">
-                <option value="1">Добавить в свои маршруты</option>
+                <option value="1">Добавить в свой маршрут</option>
                 <option value="2">Добавить рекомендуемое место (будет видно всем)</option>
               </select>
               Адрес: <input
@@ -101,8 +101,39 @@
           </form>
         </div>
       </div>
+
+      <div id="customModal" class="custom-modal">
+        <div class="custom-modal-content">
+          <span
+            onclick="exitModal()"
+            style="float: right; cursor: pointer;"
+            id="mdlClose">&times;</span>
+          <h2>Оставить отзыв</h2>
+          <form
+            class="custom-modal-form"
+            action="/review"
+            method="post">
+
+            <label for="rating">Ваша оценка:</label>
+            <select
+              id="rating"
+              name="rating"
+              required>
+              <option value="1">1 звезда</option>
+              <option value="2">2 звезды</option>
+              <option value="3">3 звезды</option>
+              <option value="4">4 звезды</option>
+              <option value="5">5 звезд</option>
+            </select>
+            <label for="comment">Отзыв:</label>
+            <textarea id="comment" name="comment"></textarea>
+            <button type="submit" value="review">Отправить</button>
+          </form>
+        </div>
+      </div>
+
     </main>
 
-    <script src="script.js"></script>
+    <script src="scripts/script.js"></script>
   </body>
 </html>
