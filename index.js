@@ -7,6 +7,7 @@ import sequelize from "./config/db.js";
 import Markers from "./models/markers.js";
 import Users from "./models/users.js";
 import Review from "./models/review.js";
+import "dotenv/config";
 
 var engine = new Liquid();
 
@@ -31,6 +32,54 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+app.get("/users", async (req, res) => {
+  const user = await Users.findOne({ where: { username: req.session.user } });
+  res.json(user);
+});
+
+app.post("/get_rec", async (req, res) => {
+  var paths;
+  if (req.body.paths) paths = req.body.paths;
+  var result = await Markers.findAll({
+    where: {pathId: paths,
+      review: {[Op.gte]: req.body.rates}
+    }
+  })
+  res.json(result)
+});
+
+app.get("/reviews", async (req, res) => {
+  const markers = await Markers.findAll({
+    where: {
+      review: { [Op.not]: null },
+    },
+    include: {
+      model: Review,
+      where: {
+        id: { [Op.not]: null },
+      },
+      order: [["createdAt", "ASC"]],
+      include: {
+        model: Users,
+        where: { id: { [Op.not]: 0 } },
+      },
+    },
+  });
+  res.json(markers);
+});
+
+app.get("/my_reviews", async (req, res) => {
+  console.log(req.session.user);
+  const user = await Users.findOne({ where: { username: req.session.user } });
+  const reviews = await Review.findAll({
+    where: { userId: user.id },
+    include: {
+      model: Markers,
+    },
+  });
+  res.json(reviews);
+});
 
 app.get("/coordinates", async (req, res) => {
   try {
@@ -90,7 +139,10 @@ app.use((req, res, next) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("login");
+  let model = {
+    key: process.env.KEY,
+  };
+  res.render("login", model);
 });
 
 app.get("/logout", (req, res) => {
@@ -122,6 +174,7 @@ app.get("/", auth, async (req, res) => {
       model = {
         name: user.name,
         surname: user.surname,
+        key: process.env.KEY,
       };
     } else if (user.name) {
       model = {
@@ -141,7 +194,6 @@ app.get("/", auth, async (req, res) => {
       group: ["markerId"],
     }).then((averages) => {
       // Обновляем записи в таблице точек с средними оценками
-      console.log(averages);
       averages.forEach((average) => {
         Markers.update(
           { review: average.dataValues.averageRating },
@@ -149,7 +201,7 @@ app.get("/", auth, async (req, res) => {
         );
       });
     });
-1
+    1;
     res.render("index", model);
   });
 });
@@ -222,7 +274,6 @@ app.post("/markers", async (req, res) => {
 app.post("/review", async (req, res) => {
   const user = Users.findOne({ where: { username: req.session.user } })
     .then((res) => {
-      console.log(req.body);
       const usId = res.id;
       Review.create({
         mark: req.body.mark,
@@ -232,7 +283,6 @@ app.post("/review", async (req, res) => {
       });
     })
     .catch((err) => console.log(err));
-  sequelize.sync();
   res.redirect("/");
 });
 

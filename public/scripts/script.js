@@ -1,15 +1,77 @@
 // Функция для закрытия модального окна
 function exitModal() {
+  document.getElementById("reviewModal").style.display = "none";
   document.getElementById("customModal").style.display = "none";
-  document.getElementById("delCont").remove();
+  document.getElementById("myReviewModal").style.display = "none";
+  document.getElementById("recomendat").style.display = "none";
+  if (document.getElementById("delCont"))
+    document.getElementById("delCont").remove();
 }
 
 // Закрываем модальное окно при клике вне его области
 window.onclick = function (event) {
   if (event.target == document.getElementById("customModal")) {
     exitModal();
+  } else if (event.target == document.getElementById("reviewModal")) {
+    exitModal();
+  } else if (event.target == document.getElementById("myReviewModal")) {
+    exitModal();
+  } else if (event.target == document.getElementById("recomendat")) {
+    exitModal();
   }
 };
+
+function openMyReview() {
+  document.getElementById("myReviewModal").style.display = "block";
+  fetch("/my_reviews")
+    .then((response) => response.json())
+    .then((res) => {
+      for (rev of res) {
+        let container = document.createElement("div");
+        container.classList.add("reviewNode");
+        let site = document.createElement("p");
+        site.textContent = `${rev.marker.address}, "${rev.marker.desc}"`;
+        let mark = document.createElement("h2");
+        mark.textContent = `Моя оценка: ${rev.mark}`;
+        let text = document.createElement("p");
+        text.textContent = `Мой комментарий: ${rev.text}`;
+        container.appendChild(site);
+        container.appendChild(mark);
+        container.appendChild(text);
+        document.getElementById("myRevCont").appendChild(container);
+      }
+    });
+}
+
+function openReview() {
+  document.getElementById("reviewModal").style.display = "block";
+  fetch("/reviews")
+    .then((response) => response.json())
+    .then((res) => {
+      for (elem of res) {
+        for (rev of elem.reviews) {
+          let container = document.createElement("div");
+          container.classList.add("reviewNode");
+          let site = document.createElement("p");
+          site.textContent = `${elem.address}, "${elem.desc}"`;
+          let mark = document.createElement("h2");
+          mark.textContent = `Оценка пользователя: ${rev.mark}`;
+          let markAvg = document.createElement("h2");
+          markAvg.textContent = `Средняя оценка: ${elem.review.toFixed(2)}`;
+          let text = document.createElement("p");
+          text.textContent = `Комментарий: ${rev.text}`;
+          let usr = document.createElement("h2");
+          usr.textContent = `${rev.user.username}: `;
+          container.appendChild(site);
+          container.appendChild(mark);
+          container.appendChild(markAvg);
+          container.appendChild(usr);
+          container.appendChild(text);
+          document.getElementById("revCont").appendChild(container);
+        }
+      }
+    });
+}
 
 function getCheckedValues() {
   var radios = document.getElementsByName("radio");
@@ -22,17 +84,41 @@ function getCheckedValues() {
   return value;
 }
 
+var recs = document.querySelectorAll(".clickableRec");
+recs.forEach((rec) => {
+  rec.addEventListener("click", (e) => {
+    if (e.target.tagName == "LABEL") {
+      // ничего
+    } else if (e.target.classList.contains("box")) {
+      let selector = document.getElementById("recSel");
+      selector.dispatchEvent(new Event("change")); // Вызов события change
+      e.target.parentNode.classList.toggle("selected");
+    } else {
+      let checkbox = e.target.querySelector("input");
+      checkbox.checked = !checkbox.checked;
+      let selector = document.getElementById("recSel");
+      selector.dispatchEvent(new Event("change")); // Вызов события change
+      e.target.classList.toggle("selected");
+    }
+  });
+});
+
 var checks = document.querySelectorAll(".clickable");
 checks.forEach((check) => {
   check.addEventListener("click", (e) => {
-    var checkbox = e.target.querySelector("input");
-    checkbox.checked = !checkbox.checked;
-    var radios = document.querySelectorAll("input[type=radio]");
-    radios.forEach((radio) => {
-      radio.dispatchEvent(new Event("change")); // Вызов события change
-    });
-    var selector = document.getElementById("selector");
-    selector.dispatchEvent(new Event("change")); // Вызов события change
+    if (e.target.tagName == "LABEL") {
+      // ничего
+    } else if (e.target.classList.contains("check")) {
+      let selector = document.getElementById("selector");
+      selector.dispatchEvent(new Event("change")); // Вызов события change
+      e.target.parentNode.classList.toggle("selected");
+    } else {
+      let checkbox = e.target.querySelector("input");
+      checkbox.checked = !checkbox.checked;
+      let selector = document.getElementById("selector");
+      selector.dispatchEvent(new Event("change")); // Вызов события change
+      e.target.classList.toggle("selected");
+    }
   });
 });
 
@@ -57,14 +143,13 @@ fetch("/coordinates")
         zoom: 14,
         controls: ["zoomControl", "fullscreenControl", "rulerControl"],
       });
-      
+
       // Функция для разделения массива на подмассивы по значению атрибута
       const dividedArray = coordinates.reduce((acc, obj) => {
         const key = obj["pathId"];
         (acc[key] = acc[key] || []).push(obj);
         return acc;
       }, {});
-      console.log(dividedArray)
       var collections = {};
 
       for (key of Object.keys(dividedArray)) {
@@ -91,43 +176,56 @@ fetch("/coordinates")
             cont.id = "delCont";
             let site = document.createElement("p");
             site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
-            let mark = document.createElement("p");
-            mark.textContent = `Рейтинг: ${coordinates[id].review}`;
             cont.appendChild(site);
-            cont.appendChild(mark);
+            if (coordinates[id].review) {
+              let mark = document.createElement("p");
+              mark.textContent = `Рейтинг: ${coordinates[id].review.toFixed(
+                2
+              )}`;
+              cont.appendChild(mark);
+            }
             place.insertBefore(cont, cls);
 
             var review_form = document.querySelector(".custom-modal-form");
-            review_form.addEventListener("submit", (e) => {
+            review_form.addEventListener("submit", async (e) => {
               e.preventDefault();
 
-              var xhr = new XMLHttpRequest();
-              xhr.open("POST", "/review", true);
-              xhr.setRequestHeader("Content-Type", "application/json");
-              var dataToSend = {
-                mark: document.getElementById("rating").value,
-                text: document.getElementById("comment").value,
-                markerId: id,
-              };
-              xhr.send(JSON.stringify(dataToSend));
-              
+              await fetch("/users")
+                .then((response) => response.json())
+                .then((user) => {
+                  if (user.id + 4 === coordinates[id].pathId) {
+                    document.getElementById("warning").textContent =
+                      "Нельзя оставлять отзывы на свои метки";
+                    return;
+                  }
+                  document.getElementById("warning").textContent = "";
+                  var xhr = new XMLHttpRequest();
+                  xhr.open("POST", "/review", true);
+                  xhr.setRequestHeader("Content-Type", "application/json");
+                  var dataToSend = {
+                    mark: document.getElementById("rating").value,
+                    text: document.getElementById("comment").value,
+                    markerId: id,
+                  };
+                  xhr.send(JSON.stringify(dataToSend));
+                });
               document.getElementById("rating").value = 1;
-              document.getElementById("comment").value = '';
-              document.getElementById("delCont").remove();
+              document.getElementById("comment").value = "";
+              if (document.getElementById("delCont"))
+                document.getElementById("delCont").remove();
               var modal = document.getElementById("customModal");
               modal.style.display = "none";
-              setTimeout(function() {
+              setTimeout(function () {
                 window.location.reload();
-              }, 500);
+              }, 700);
             });
           });
           collections[key].add(placemark);
         }
         myMap.geoObjects.add(collections[key]);
       }
-
       if (
-        [1, 2, 3, 4].includes(
+        ![1, 2, 3, 4].includes(
           Object.keys(collections)[Object.keys(collections).length - 1]
         )
       ) {
@@ -140,6 +238,10 @@ fetch("/coordinates")
         .getElementById("selector")
         .addEventListener("change", function () {
           var value = getCheckedValues();
+          var checks = document.querySelectorAll(".clickable");
+          checks.forEach((check) => {
+            check.classList.remove("selected");
+          });
           for (key of Object.keys(collections)) {
             collections[key].options.set("visible", false);
           }
@@ -177,6 +279,117 @@ fetch("/coordinates")
         // Добавляем метку на карту
         myMap.geoObjects.add(placemark);
       });
+      var flag = false;
+      var sp = document.createElement("span");
+      document.getElementById("getRad").addEventListener("click", () => {
+        flag = Boolean(coords);
+        if (!flag) {
+          if (sp.textContent === "") {
+            sp.textContent = "Для начала выберите точку на карте";
+            let parent = document.getElementById("RAD");
+            let bef = parent.querySelector("input");
+            parent.insertBefore(sp, bef);
+          }
+        } else {
+          sp.textContent = "";
+          document.getElementById("recRadius").removeAttribute("disabled");
+        }
+      });
+      var recs;
+      var rec_form = document.getElementById("get_rec");
+      rec_form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        if (recs) recs.options.set("visible", false);
+        let boxes = document.querySelectorAll(".box");
+        let arr = [];
+        let dataToSend = {};
+        boxes.forEach((box) => {
+          if (box.checked) arr.push(box.value);
+        });
+        if (arr.length > 0) {
+          dataToSend["paths"] = arr;
+        }
+        dataToSend["rates"] = document.getElementById("getRating").value;
+        let requestOptions = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataToSend), // Преобразуем данные в формат JSON
+        };
+
+        fetch("/get_rec", requestOptions)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json(); // Преобразуем ответ в формат JSON
+          })
+          .then((data) => {
+            if (document.getElementById("recRadius").value !== "") {
+              var radius = document.getElementById("recRadius").value * 1000;
+              var center = coords;
+              var filteredMarkers = data.filter((marker) => {
+                var distance = ymaps.coordSystem.geo.getDistance(center, [
+                  marker.ltd,
+                  marker.lng,
+                ]);
+                return distance <= radius;
+              });
+
+              recs = new ymaps.GeoObjectCollection(
+                {},
+                {
+                  preset: "islands#greenDotIcon",
+                  visible: true,
+                }
+              );
+              filteredMarkers.forEach((marker) => {
+                var placemark = new ymaps.Placemark([marker.ltd, marker.lng], {
+                  hintContent: `"${marker.desc}"\n${marker.address}`,
+                  id: marker.id,
+                });
+                recs.add(placemark);
+              });
+            } else {
+              recs = new ymaps.GeoObjectCollection(
+                {},
+                {
+                  preset: "islands#greenDotIcon",
+                  visible: true,
+                }
+              );
+              for (elem of data) {
+                let placemark = new ymaps.Placemark([elem.ltd, elem.lng], {
+                  hintContent: `"${elem.desc}"\n${elem.address}`,
+                  id: elem.id,
+                });
+                recs.add(placemark);
+              }
+            }
+
+            myMap.geoObjects.add(recs);
+
+            document.getElementById("getRating").value = "1";
+            document.getElementById("recRadius").value = "";
+            boxes.forEach((box) => {
+              box.checked = false;
+            });
+            let conts = document.querySelectorAll(".clickableRec");
+            conts.forEach((cont) => {
+              cont.classList.remove("selected");
+
+              document.getElementById("recomendat").style.display = "none";
+            });
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with your fetch operation:",
+              error
+            );
+          });
+      });
+
       var form = document.getElementById("new_mark");
       // Добавляем обработчик события submit для формы
       form.addEventListener("submit", function (event) {
@@ -205,26 +418,17 @@ fetch("/coordinates")
 
       document.getElementById("add_route").addEventListener("click", () => {
         if (!coords) {
-          // Создаем новый элемент
-          var newElement = document.createElement("div");
-
-          // Настраиваем его, например, добавляем текст
-          newElement.textContent = "Выберите точку на карте";
-
-          // Добавляем класс (если нужно)
-          newElement.id = "warning";
-
-          // Получаем родительский элемент, в который мы хотим добавить новый элемент
-          var parentElement = document.getElementById("left_side");
-
-          // Добавляем новый элемент в DOM
-          parentElement.appendChild(newElement);
+          document.getElementById("warning").textContent =
+            "Выберите точку на карте";
         } else {
-          if (document.getElementById("warning"))
-            document.getElementById("warning").remove();
+          document.getElementById("warning").textContent = "";
           var modal = document.getElementById("modal");
           modal.style.display = "block";
         }
+      });
+      document.getElementById("get_recs").addEventListener("click", () => {
+        var modal = document.getElementById("recomendat");
+        modal.style.display = "block";
       });
     }
   })

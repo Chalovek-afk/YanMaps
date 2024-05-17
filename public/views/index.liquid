@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <title>Туризм</title>
     <link rel="stylesheet" href="styles/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
     <script src="https://api-maps.yandex.ru/2.1/?apikey=6e172ff2-4698-4126-8b89-e73d4c14338c&lang=ru_RU&coordorder=latlong" type="text/javascript"></script>
   </head>
   <body>
@@ -11,16 +17,23 @@
       <div id="left_side">
         <div id="map"></div>
         <div id="button_wrapper">
-          <button>Рекомендации</button>
+          <button id="get_recs">Рекомендации</button>
           <button id="add_route">Добавить маршрут</button>
         </div>
+        <div id="warning"></div>
       </div>
       <div id="right_side">
-        <div id="user_info">
-          <div id="username">{{ name }} {{ surname }}<br>{{ addr }}</div>
-          <div>
-            <a id="update" href="/upd">Редактировать профиль</a>
-            <a id="out" href="/logout">Выход</a>
+        <div id="user_profile">
+          <div id="reviews">
+            <button onclick="openReview()">Отзывы</button>
+            <button onclick="openMyReview()">Мои отзывы</button>
+          </div>
+          <div id="user_info">
+            <div id="username">{{ name }} {{ surname }}<br>{{ addr }}</div>
+            <div>
+              <a id="update" href="/upd">Редактировать профиль</a>
+              <a id="out" href="/logout">Выход</a>
+            </div>
           </div>
         </div>
         <fieldset id="selector">
@@ -128,6 +141,97 @@
             <label for="comment">Отзыв:</label>
             <textarea id="comment" name="comment"></textarea>
             <button type="submit" value="review">Отправить</button>
+          </form>
+        </div>
+      </div>
+
+
+      <div id="reviewModal" class="custom-modal">
+
+        <div class="custom-modal-content" id="revCont">
+          <span
+            onclick="exitModal()"
+            style="float: right; cursor: pointer;"
+            id="mdlClose">&times;</span>
+        </div>
+      </div>
+
+      <div id="myReviewModal" class="custom-modal">
+        <div class="custom-modal-content" id="myRevCont">
+          <span
+            onclick="exitModal()"
+            style="float: right; cursor: pointer;"
+            id="mdlClose">&times;</span>
+        </div>
+      </div>
+
+      <div id="recomendat" class="custom-modal">
+
+        <div class="custom-modal-content" id="recomends">
+          <span
+            onclick="exitModal()"
+            style="float: right; cursor: pointer;"
+            id="mdlClose">&times;</span>
+          <form
+            action="/get_rec"
+            method="get"
+            id="get_rec">
+            <div class="grd">
+              <div>
+                <label for="getRating">Рейтинг:</label>
+                <select
+                  id="getRating"
+                  name="getRating"
+                  required>
+                  <option value="1">
+                    ===
+                  </option>
+                  <option value="2">2+ звезды</option>
+                  <option value="3">3+ звезды</option>
+                  <option value="4">4+ звезды</option>
+                </select>
+              </div>
+              <div id="RAD">
+                <input
+                  type="number"
+                  name="recRadius"
+                  id="recRadius"
+                  placeholder="Введите размер в километрах"
+                  disabled>
+                <button type="button" id="getRad">Поиск по радиусу</button>
+              </div>
+            </div>
+
+            <fieldset id="recSel">
+              <div class="clickableRec">
+                <input
+                  type="checkbox"
+                  class="box"
+                  id="check1"
+                  name="check1"
+                  value="1" />
+                <label for="check1">Чеховские места</label>
+              </div>
+              <div class="clickableRec">
+                <input
+                  type="checkbox"
+                  class="box"
+                  id="check2"
+                  name="check2"
+                  value="2" />
+                <label for="check2">Музеи</label>
+              </div>
+              <div class="clickableRec">
+                <input
+                  type="checkbox"
+                  class="box"
+                  id="check3"
+                  name="check3"
+                  value="3" />
+                <label for="check3">Активный отдых</label>
+              </div>
+            </fieldset>
+            <button type="submit" id="find">Найти</button>
           </form>
         </div>
       </div>

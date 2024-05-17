@@ -23,16 +23,22 @@ window.onclick = function (event) {
 var checks = document.querySelectorAll(".clickable");
 checks.forEach((check) => {
   check.addEventListener("click", (e) => {
-    var checkbox = e.target.querySelector("input");
-    checkbox.checked = !checkbox.checked;
-    var radios = document.querySelectorAll("input[type=radio]");
-    radios.forEach((radio) => {
-      radio.dispatchEvent(new Event("change")); // Вызов события change
-    });
-    var selector = document.getElementById("selector");
-    selector.dispatchEvent(new Event("change")); // Вызов события change
+    if (e.target.tagName == "LABEL") {
+      // ничего
+    } else if (e.target.classList.contains("check")) {
+      let selector = document.getElementById("selector");
+      selector.dispatchEvent(new Event("change")); // Вызов события change
+      e.target.parentNode.classList.toggle("selected");
+    } else {
+      let checkbox = e.target.querySelector("input");
+      checkbox.checked = !checkbox.checked;
+      let selector = document.getElementById("selector");
+      selector.dispatchEvent(new Event("change")); // Вызов события change
+      e.target.classList.toggle("selected");
+    }
   });
 });
+
 
 fetch("/coordinates")
   .then((response) => response.json())
@@ -76,10 +82,12 @@ fetch("/coordinates")
             cont.id = "delCont";
             let site = document.createElement("p");
             site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
-            let mark = document.createElement("p");
-            mark.textContent = `Рейтинг: ${coordinates[id].review}`;
             cont.appendChild(site);
-            cont.appendChild(mark);
+            if (coordinates[id].review){ 
+              let mark = document.createElement("p");
+              mark.textContent = `Рейтинг: ${coordinates[id].review.toFixed(2)}`;
+              cont.appendChild(mark);
+              }
             place.insertBefore(cont, cls);
           });
           collections[key].add(placemark)
@@ -90,6 +98,10 @@ fetch("/coordinates")
         .getElementById("selector")
         .addEventListener("change", function () {
           var value = getCheckedValues();
+          var checks = document.querySelectorAll(".clickable");
+          checks.forEach((check) => {
+            check.classList.remove('selected')
+          })
           for (key of Object.keys(collections)) {
             collections[key].options.set("visible", false);
           }
