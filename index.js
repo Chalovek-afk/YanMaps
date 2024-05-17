@@ -42,11 +42,36 @@ app.post("/get_rec", async (req, res) => {
   var paths;
   if (req.body.paths) paths = req.body.paths;
   var result = await Markers.findAll({
-    where: {pathId: paths,
-      review: {[Op.gte]: req.body.rates}
+    where: { pathId: paths, review: { [Op.gte]: req.body.rates } },
+  });
+  res.json(result);
+});
+
+app.get("/profile", async (req, res) => {
+  await Users.findOne({
+    where: {
+      username: req.session.user,
+    },
+  }).then((user) => {
+    var model;
+    if (user.name && user.surname) {
+      model = {
+        name: user.name,
+        surname: user.surname,
+        key: process.env.KEY,
+      };
+    } else if (user.name) {
+      model = {
+        name: user.name,
+      };
+    } else {
+      model = {
+        name: user.username,
+      };
     }
-  })
-  res.json(result)
+    model["addr"] = user.geo;
+    res.render("profile", model);
+  });
 });
 
 app.get("/reviews", async (req, res) => {
@@ -201,7 +226,6 @@ app.get("/", auth, async (req, res) => {
         );
       });
     });
-    1;
     res.render("index", model);
   });
 });
@@ -272,19 +296,47 @@ app.post("/markers", async (req, res) => {
 });
 
 app.post("/review", async (req, res) => {
-  const user = Users.findOne({ where: { username: req.session.user } })
-    .then((res) => {
-      const usId = res.id;
-      Review.create({
-        mark: req.body.mark,
-        text: req.body.text,
-        markerId: req.body.markerId,
-        userId: usId,
-      });
-    })
-    .catch((err) => console.log(err));
+  const rev = await Review.findAll().then((result) => {
+    const user = Users.findOne({ where: { username: req.session.user } }).then(
+      (us) => {
+        var flag = result.every((revi) => {
+          if (
+            revi.markerId === req.body.markerId &&
+            revi.userId === us.dataValues.id
+          ) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+        if (flag) {
+          Review.create({
+            mark: req.body.mark,
+            text: req.body.text,
+            markerId: req.body.markerId,
+            userId: us.dataValues.id,
+          });
+        }
+
+      }
+    );
+  });
   res.redirect("/");
 });
+
+// const user = Users.findOne({ where: { username: req.session.user } })
+//   .then((res) => {
+//     const usId = res.id;
+
+//     Review.create({
+//       mark: req.body.mark,
+//       text: req.body.text,
+//       markerId: req.body.markerId,
+//       userId: usId,
+//     });
+//   })
+//   .catch((err) => console.log(err));
+// res.redirect("/");
 
 sequelize.sync();
 

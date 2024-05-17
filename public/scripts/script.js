@@ -1,77 +1,56 @@
 // Функция для закрытия модального окна
 function exitModal() {
-  document.getElementById("reviewModal").style.display = "none";
-  document.getElementById("customModal").style.display = "none";
-  document.getElementById("myReviewModal").style.display = "none";
-  document.getElementById("recomendat").style.display = "none";
+  if (document.querySelector(".reviewNode")) {
+    document.querySelectorAll(".reviewNode").forEach((node) => {
+      node.remove();
+    });
+  }
+  if (document.querySelector("#secret"))
+    document.querySelector("#secret").remove();
   if (document.getElementById("delCont"))
     document.getElementById("delCont").remove();
+  document.getElementById("customModal").style.display = "none";
+  document.getElementById("recomendat").style.display = "none";
 }
 
 // Закрываем модальное окно при клике вне его области
 window.onclick = function (event) {
   if (event.target == document.getElementById("customModal")) {
     exitModal();
-  } else if (event.target == document.getElementById("reviewModal")) {
-    exitModal();
-  } else if (event.target == document.getElementById("myReviewModal")) {
-    exitModal();
   } else if (event.target == document.getElementById("recomendat")) {
     exitModal();
   }
 };
 
-function openMyReview() {
-  document.getElementById("myReviewModal").style.display = "block";
-  fetch("/my_reviews")
-    .then((response) => response.json())
-    .then((res) => {
-      for (rev of res) {
-        let container = document.createElement("div");
-        container.classList.add("reviewNode");
-        let site = document.createElement("p");
-        site.textContent = `${rev.marker.address}, "${rev.marker.desc}"`;
-        let mark = document.createElement("h2");
-        mark.textContent = `Моя оценка: ${rev.mark}`;
-        let text = document.createElement("p");
-        text.textContent = `Мой комментарий: ${rev.text}`;
-        container.appendChild(site);
-        container.appendChild(mark);
-        container.appendChild(text);
-        document.getElementById("myRevCont").appendChild(container);
-      }
-    });
-}
-
-function openReview() {
-  document.getElementById("reviewModal").style.display = "block";
-  fetch("/reviews")
-    .then((response) => response.json())
-    .then((res) => {
-      for (elem of res) {
-        for (rev of elem.reviews) {
-          let container = document.createElement("div");
-          container.classList.add("reviewNode");
-          let site = document.createElement("p");
-          site.textContent = `${elem.address}, "${elem.desc}"`;
-          let mark = document.createElement("h2");
-          mark.textContent = `Оценка пользователя: ${rev.mark}`;
-          let markAvg = document.createElement("h2");
-          markAvg.textContent = `Средняя оценка: ${elem.review.toFixed(2)}`;
-          let text = document.createElement("p");
-          text.textContent = `Комментарий: ${rev.text}`;
-          let usr = document.createElement("h2");
-          usr.textContent = `${rev.user.username}: `;
-          container.appendChild(site);
-          container.appendChild(mark);
-          container.appendChild(markAvg);
-          container.appendChild(usr);
-          container.appendChild(text);
-          document.getElementById("revCont").appendChild(container);
-        }
-      }
-    });
-}
+// function openReview() {
+//   document.getElementById("reviewModal").style.display = "block";
+//   fetch("/reviews")
+//     .then((response) => response.json())
+//     .then((res) => {
+//       for (elem of res) {
+//         for (rev of elem.reviews) {
+//           let container = document.createElement("div");
+//           container.classList.add("reviewNode");
+//           let site = document.createElement("p");
+//           site.textContent = `${elem.address}, "${elem.desc}"`;
+//           let mark = document.createElement("h2");
+//           mark.textContent = `Оценка пользователя: ${rev.mark}`;
+//           let markAvg = document.createElement("h2");
+//           markAvg.textContent = `Средняя оценка: ${elem.review.toFixed(2)}`;
+//           let text = document.createElement("p");
+//           text.textContent = `Комментарий: ${rev.text}`;
+//           let usr = document.createElement("h2");
+//           usr.textContent = `${rev.user.username}: `;
+//           container.appendChild(site);
+//           container.appendChild(mark);
+//           container.appendChild(markAvg);
+//           container.appendChild(usr);
+//           container.appendChild(text);
+//           document.getElementById("revCont").appendChild(container);
+//         }
+//       }
+//     });
+// }
 
 function getCheckedValues() {
   var radios = document.getElementsByName("radio");
@@ -167,16 +146,21 @@ fetch("/coordinates")
           });
           placemark.events.add("click", function (e) {
             // Получаем ID метки
-            var id = e.get("target").properties.get("id");
+            let id = e.get("target").properties.get("id");
             // Открываем модальное окно с ID метки
             document.getElementById("customModal").style.display = "block";
             let place = document.querySelector(".custom-modal-content");
             let cls = document.getElementById("mdlClose");
             let cont = document.createElement("div");
             cont.id = "delCont";
+            let secret = document.createElement("span");
+            secret.style.opacity = "0";
+            secret.textContent = id;
+            secret.id = "secret";
             let site = document.createElement("p");
             site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
             cont.appendChild(site);
+            cont.appendChild(secret);
             if (coordinates[id].review) {
               let mark = document.createElement("p");
               mark.textContent = `Рейтинг: ${coordinates[id].review.toFixed(
@@ -186,28 +170,65 @@ fetch("/coordinates")
             }
             place.insertBefore(cont, cls);
 
+            fetch("/reviews")
+              .then((response) => response.json())
+              .then((res) => {
+                for (elem of res) {
+                  if (elem.id === id) {
+                    for (rev of elem.reviews) {
+                      let container = document.createElement("div");
+                      container.classList.add("reviewNode");
+                      let site = document.createElement("p");
+                      site.textContent = `${elem.address}, "${elem.desc}"`;
+                      let mark = document.createElement("h2");
+                      mark.textContent = `Оценка пользователя: ${rev.mark}`;
+                      let markAvg = document.createElement("h2");
+                      markAvg.textContent = `Средняя оценка: ${elem.review.toFixed(
+                        2
+                      )}`;
+                      let text = document.createElement("p");
+                      text.textContent = `Комментарий: ${rev.text}`;
+                      let usr = document.createElement("h2");
+                      usr.textContent = `${rev.user.username}: `;
+                      container.appendChild(site);
+                      container.appendChild(mark);
+                      container.appendChild(markAvg);
+                      container.appendChild(usr);
+                      container.appendChild(text);
+                      document.getElementById("revCont").appendChild(container);
+                    }
+                  }
+                }
+              });
             var review_form = document.querySelector(".custom-modal-form");
             review_form.addEventListener("submit", async (e) => {
               e.preventDefault();
-
               await fetch("/users")
                 .then((response) => response.json())
                 .then((user) => {
-                  if (user.id + 4 === coordinates[id].pathId) {
-                    document.getElementById("warning").textContent =
-                      "Нельзя оставлять отзывы на свои метки";
-                    return;
+                  if (document.getElementById("secret")) {
+                    if (
+                      user.id + 4 ===
+                      coordinates[
+                        +document.getElementById("secret").textContent
+                      ].pathId
+                    ) {
+                      document.getElementById("warning").textContent =
+                        "Нельзя оставлять отзывы на свои метки";
+                      return;
+                    }
+
+                    document.getElementById("warning").textContent = "";
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/review", true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    var dataToSend = {
+                      mark: document.getElementById("rating").value,
+                      text: document.getElementById("comment").value,
+                      markerId: +document.getElementById("secret").textContent,
+                    };
+                    xhr.send(JSON.stringify(dataToSend));
                   }
-                  document.getElementById("warning").textContent = "";
-                  var xhr = new XMLHttpRequest();
-                  xhr.open("POST", "/review", true);
-                  xhr.setRequestHeader("Content-Type", "application/json");
-                  var dataToSend = {
-                    mark: document.getElementById("rating").value,
-                    text: document.getElementById("comment").value,
-                    markerId: id,
-                  };
-                  xhr.send(JSON.stringify(dataToSend));
                 });
               document.getElementById("rating").value = 1;
               document.getElementById("comment").value = "";

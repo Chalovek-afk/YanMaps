@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТУризм</title>
+    <link rel="stylesheet" href="styles/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+    <style>
+      #user_profile {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid black;
+        align-content: end;
+        justify-content: end;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="user_profile">
+      <div id="reviews">
+        <button onclick="openMyReview()">Мои отзывы</button>
+      </div>
+      <div id="user_info">
+        <div id="username">{{ name }} {{ surname }}<br>{{ addr }}</div>
+        <div>
+          <a id="back" href="/">Карта</a>
+          <a id="update" href="/upd">Редактировать профиль</a>
+          <a id="out" href="/logout">Выход</a>
+        </div>
+      </div>
+    </div>
+    <div id="myReviewModal" class="custom-modal">
+      <div class="custom-modal-content" id="myRevCont">
+        <span
+          onclick="exitModal()"
+          style="float: right; cursor: pointer;"
+          id="mdlClose">&times;</span>
+      </div>
+    </div>
+  </body>
+  <script src="scripts/profile.js"></script>
+</html>

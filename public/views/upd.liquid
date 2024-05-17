@@ -13,11 +13,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
   </head>
   <body>
-    <form method="post">
-      Адрес: <input type="text" name="addr">
-      Имя: <input type="text" name="name">
-      Фамилия: <input type="text" name="surname">
-      <button type="submit" value="registration">Обновить данные</button>
+    <form method="post" style="padding-left: 40px;">
+      Адрес: <input
+        type="text"
+        name="addr"
+        style="display: block;">
+      Имя: <input
+        type="text"
+        name="name"
+        style="display: block;">
+      Фамилия: <input
+        type="text"
+        name="surname"
+        style="display: block;">
+      <button
+        type="submit"
+        value="registration"
+        style="display: block; position:relative; right: 12px">Обновить данные</button>
       <div>{{ e }}</div>
     </form>
   </body>

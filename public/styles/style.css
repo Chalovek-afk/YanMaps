@@ -18,7 +18,7 @@ main {
   height: 20vh;
   width: 100%;
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr;
   align-content: end;
   justify-content: end;
   text-align: right;
@@ -27,7 +27,7 @@ main {
 
 #user_profile {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   border: 1px solid black;
   align-content: end;
   justify-content: end;
@@ -212,12 +212,16 @@ input[type="checkbox"] {
   width: 80%;
 }
 
-#revCont, #myRevCont, #recomends {
+ #myRevCont, #recomends {
   height: 60vh;
   overflow: auto;
   position: fixed;
   left: 35%;
   bottom: 0.2%;
+}
+#revCont {
+  overflow: auto;
+  max-height: 30%;
 }
 
 .reviewNode {
@@ -332,6 +336,10 @@ select.minimal:focus {
   border: 1px solid #888;
   width: 80%;
   max-width: 600px;
+  height: 60%;
+  position: fixed;
+  left: 33%;
+  bottom: 1.5%;
 }
 
 /* Стили для формы */

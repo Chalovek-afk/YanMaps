@@ -24,14 +24,10 @@
       </div>
       <div id="right_side">
         <div id="user_profile">
-          <div id="reviews">
-            <button onclick="openReview()">Отзывы</button>
-            <button onclick="openMyReview()">Мои отзывы</button>
-          </div>
           <div id="user_info">
             <div id="username">{{ name }} {{ surname }}<br>{{ addr }}</div>
             <div>
-              <a id="update" href="/upd">Редактировать профиль</a>
+              <a id="profile" href="/profile">Профиль</a>
               <a id="out" href="/logout">Выход</a>
             </div>
           </div>
@@ -142,26 +138,7 @@
             <textarea id="comment" name="comment"></textarea>
             <button type="submit" value="review">Отправить</button>
           </form>
-        </div>
-      </div>
-
-
-      <div id="reviewModal" class="custom-modal">
-
-        <div class="custom-modal-content" id="revCont">
-          <span
-            onclick="exitModal()"
-            style="float: right; cursor: pointer;"
-            id="mdlClose">&times;</span>
-        </div>
-      </div>
-
-      <div id="myReviewModal" class="custom-modal">
-        <div class="custom-modal-content" id="myRevCont">
-          <span
-            onclick="exitModal()"
-            style="float: right; cursor: pointer;"
-            id="mdlClose">&times;</span>
+          <div id="revCont"></div>
         </div>
       </div>
 
@@ -184,7 +161,7 @@
                   name="getRating"
                   required>
                   <option value="1">
-                    ===
+                    Любая
                   </option>
                   <option value="2">2+ звезды</option>
                   <option value="3">3+ звезды</option>
