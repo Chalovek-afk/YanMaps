@@ -24,6 +24,11 @@
       </div>
       <div id="right_side">
         <div id="user_profile">
+          <div id="sel">
+            <button id="all">Все маршруты</button>
+            <button id="fav">Избранные</button>
+            <button id="myAdd">Мои расширенные</button>
+          </div>
           <div id="user_info">
             <div id="username">{{ name }} {{ surname }}<br>{{ addr }}</div>
             <div>
@@ -44,6 +49,12 @@
           </div>
           <div class="clickable">
             <input
+              type="checkbox"
+              id="heartCheckbox1"
+              class="heart-checkbox"
+              value="1">
+            <label for="heartCheckbox1" class="heart-label"></label>
+            <input
               type="radio"
               class="check"
               id="checkbox1"
@@ -53,6 +64,12 @@
           </div>
           <div class="clickable">
             <input
+              type="checkbox"
+              id="heartCheckbox2"
+              class="heart-checkbox"
+              value="2">
+            <label for="heartCheckbox2" class="heart-label"></label>
+            <input
               type="radio"
               class="check"
               id="checkbox2"
@@ -61,6 +78,12 @@
             <label for="checkbox2">Музеи</label>
           </div>
           <div class="clickable">
+            <input
+              type="checkbox"
+              id="heartCheckbox3"
+              class="heart-checkbox"
+              value="3">
+            <label for="heartCheckbox3" class="heart-label"></label>
             <input
               type="radio"
               class="check"

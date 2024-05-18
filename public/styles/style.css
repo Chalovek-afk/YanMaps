@@ -27,10 +27,11 @@ main {
 
 #user_profile {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 2fr 1fr;
   border: 1px solid black;
   align-content: end;
   justify-content: end;
+  align-items: end;
 }
 
 #user_info div {
@@ -400,4 +401,35 @@ button {
 #find {
   margin-top: 2%;
   margin-left: 40%;
+}
+
+.heart-checkbox {
+  display: none; /* Скрываем стандартный чекбокс */
+}
+
+.heart-label {
+  cursor: pointer;
+  font-size: 2rem;
+  color: grey;
+  user-select: none;
+}
+
+.heart-checkbox:checked + .heart-label {
+  color: red;
+}
+
+.heart-label::before {
+  content: '♡'; /* Используем символ сердечка */
+}
+
+.heart-checkbox:checked + .heart-label::before {
+  content: '❤️'; /* Используем символ заполненного сердечка */
+}
+
+#sel {
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
 }

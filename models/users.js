@@ -31,7 +31,13 @@ const Users = sequelize.define("users", {
     allowNull: false,
     defaultValue: false,
   },
+  fav: {
+    type: DataTypes.ARRAY(DataTypes.INTEGER),
+    allowNull: true,
+  }
 });
+
+sequelize.sync()
 
 Users.hasMany(Markers, { onDelete: "cascade" });
 Markers.belongsTo(Users);

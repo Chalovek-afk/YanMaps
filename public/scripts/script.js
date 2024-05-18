@@ -22,35 +22,42 @@ window.onclick = function (event) {
   }
 };
 
-// function openReview() {
-//   document.getElementById("reviewModal").style.display = "block";
-//   fetch("/reviews")
-//     .then((response) => response.json())
-//     .then((res) => {
-//       for (elem of res) {
-//         for (rev of elem.reviews) {
-//           let container = document.createElement("div");
-//           container.classList.add("reviewNode");
-//           let site = document.createElement("p");
-//           site.textContent = `${elem.address}, "${elem.desc}"`;
-//           let mark = document.createElement("h2");
-//           mark.textContent = `Оценка пользователя: ${rev.mark}`;
-//           let markAvg = document.createElement("h2");
-//           markAvg.textContent = `Средняя оценка: ${elem.review.toFixed(2)}`;
-//           let text = document.createElement("p");
-//           text.textContent = `Комментарий: ${rev.text}`;
-//           let usr = document.createElement("h2");
-//           usr.textContent = `${rev.user.username}: `;
-//           container.appendChild(site);
-//           container.appendChild(mark);
-//           container.appendChild(markAvg);
-//           container.appendChild(usr);
-//           container.appendChild(text);
-//           document.getElementById("revCont").appendChild(container);
-//         }
-//       }
-//     });
-// }
+document.querySelectorAll(".heart-checkbox").forEach((elem) => {
+  elem.addEventListener("change", () => {
+    let places = document.querySelectorAll(".heart-checkbox");
+    let hearts = [];
+    places.forEach((place) => {
+      if (place.checked) {
+        hearts.push(+place.value);
+      }
+    });
+    fetch("/users", {
+      method: "PUT", // Используем метод PUT для обновления данных
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(hearts),
+    })
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error:", error);
+        // Обработайте ошибку
+      });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("/users")
+    .then((res) => res.json())
+    .then((response) => {
+      var favourites = document.querySelectorAll(".heart-checkbox");
+      favourites.forEach((favour) => {
+        if (response.fav.includes(+favour.value)) {
+          favour.checked = true;
+        }
+      });
+    });
+});
 
 function getCheckedValues() {
   var radios = document.getElementsByName("radio");
@@ -87,12 +94,13 @@ checks.forEach((check) => {
   check.addEventListener("click", (e) => {
     if (e.target.tagName == "LABEL") {
       // ничего
+    } else if (e.target.className == "heart-checkbox") {
     } else if (e.target.classList.contains("check")) {
       let selector = document.getElementById("selector");
       selector.dispatchEvent(new Event("change")); // Вызов события change
       e.target.parentNode.classList.toggle("selected");
     } else {
-      let checkbox = e.target.querySelector("input");
+      let checkbox = e.target.querySelector("input[type=radio");
       checkbox.checked = !checkbox.checked;
       let selector = document.getElementById("selector");
       selector.dispatchEvent(new Event("change")); // Вызов события change
@@ -183,16 +191,12 @@ fetch("/coordinates")
                       let mark = document.createElement("h2");
                       mark.textContent = `Оценка пользователя: ${rev.mark}`;
                       let markAvg = document.createElement("h2");
-                      markAvg.textContent = `Средняя оценка: ${elem.review.toFixed(
-                        2
-                      )}`;
                       let text = document.createElement("p");
                       text.textContent = `Комментарий: ${rev.text}`;
                       let usr = document.createElement("h2");
                       usr.textContent = `${rev.user.username}: `;
                       container.appendChild(site);
                       container.appendChild(mark);
-                      container.appendChild(markAvg);
                       container.appendChild(usr);
                       container.appendChild(text);
                       document.getElementById("revCont").appendChild(container);

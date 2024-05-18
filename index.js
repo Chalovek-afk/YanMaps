@@ -38,6 +38,14 @@ app.get("/users", async (req, res) => {
   res.json(user);
 });
 
+app.put("/users", async (req, res) => {
+  const user = await Users.findOne({
+    where: { username: req.session.user },
+  });
+  user.fav = req.body;
+  await user.save();
+});
+
 app.post("/get_rec", async (req, res) => {
   var paths;
   if (req.body.paths) paths = req.body.paths;
@@ -317,26 +325,11 @@ app.post("/review", async (req, res) => {
             userId: us.dataValues.id,
           });
         }
-
       }
     );
   });
   res.redirect("/");
 });
-
-// const user = Users.findOne({ where: { username: req.session.user } })
-//   .then((res) => {
-//     const usId = res.id;
-
-//     Review.create({
-//       mark: req.body.mark,
-//       text: req.body.text,
-//       markerId: req.body.markerId,
-//       userId: usId,
-//     });
-//   })
-//   .catch((err) => console.log(err));
-// res.redirect("/");
 
 sequelize.sync();
 
