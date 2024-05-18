@@ -22,6 +22,46 @@ window.onclick = function (event) {
   }
 };
 
+document.getElementById("all").addEventListener("click", () => {
+  document.getElementById("selector").classList.remove("hidden");
+  document.querySelector(".selectorFav").innerHTML = "";
+  document.querySelector(".selectorFav").style.display = "none";
+});
+
+document.getElementById("fav").addEventListener("click", () => {
+  document.getElementById("selector").classList.add("hidden");
+  let cont = document.querySelector(".selectorFav");
+  let places = document.querySelectorAll(".heart-checkbox");
+  let newPlaces = [];
+  places.forEach((place) => {
+    plc = place.parentNode.cloneNode(true);
+    newPlaces.push(plc);
+  });
+  newPlaces.forEach((place) => {
+    if (place.querySelector(".heart-checkbox").checked) cont.appendChild(place);
+  });
+  cont.style.display = "block";
+  let checks = cont.querySelectorAll(".clickable");
+  checks.forEach((check) => {
+    check.addEventListener("click", (e) => {
+      if (e.target.tagName == "LABEL") {
+        // ничего
+      } else if (e.target.className == "heart-checkbox") {
+      } else if (e.target.classList.contains("check")) {
+        let selector = document.querySelector(".selectorFav");
+        selector.dispatchEvent(new Event("change")); // Вызов события change
+        e.target.parentNode.classList.toggle("selected");
+      } else {
+        let checkbox = e.target.querySelector("input[type=radio");
+        checkbox.checked = !checkbox.checked;
+        let selector = document.querySelector(".selectorFav");
+        selector.dispatchEvent(new Event("change")); // Вызов события change
+        e.target.classList.toggle("selected");
+      }
+    });
+  });
+});
+
 document.querySelectorAll(".heart-checkbox").forEach((elem) => {
   elem.addEventListener("change", () => {
     let places = document.querySelectorAll(".heart-checkbox");
@@ -261,6 +301,21 @@ fetch("/coordinates")
 
       document
         .getElementById("selector")
+        .addEventListener("change", function () {
+          var value = getCheckedValues();
+          var checks = document.querySelectorAll(".clickable");
+          checks.forEach((check) => {
+            check.classList.remove("selected");
+          });
+          for (key of Object.keys(collections)) {
+            collections[key].options.set("visible", false);
+          }
+          if (!value) return;
+          collections[value].options.set("visible", true);
+        });
+
+        document
+        .querySelector(".selectorFav")
         .addEventListener("change", function () {
           var value = getCheckedValues();
           var checks = document.querySelectorAll(".clickable");

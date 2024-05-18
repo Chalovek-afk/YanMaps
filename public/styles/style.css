@@ -63,7 +63,6 @@ main {
 #selector {
   height: 80vh;
   width: 100%;
-  display: block;
   text-align: center;
   font-size: 28px;
   overflow: auto;
@@ -432,4 +431,28 @@ button {
 
 .hidden {
   display: none;
+}
+
+.selectorFav {
+  display: none;
+  height: 80vh;
+  width: 100%;
+  text-align: center;
+  font-size: 28px;
+  overflow: auto;
+}
+
+.selectorFav div {
+  border: 1px solid black;
+  height: 20.72vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selectorFav div:hover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 255, 64, 0.5);  
 }
