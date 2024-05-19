@@ -91,11 +91,13 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((res) => res.json())
     .then((response) => {
       var favourites = document.querySelectorAll(".heart-checkbox");
-      favourites.forEach((favour) => {
-        if (response.fav.includes(+favour.value)) {
-          favour.checked = true;
-        }
-      });
+      if (response.fav) {
+        favourites.forEach((favour) => {
+          if (response.fav.includes(+favour.value)) {
+            favour.checked = true;
+          }
+        });
+      }
     });
 });
 
@@ -290,7 +292,7 @@ fetch("/coordinates")
         myMap.geoObjects.add(collections[key]);
       }
       if (
-        ![1, 2, 3, 4].includes(
+        ![1, 2, 3, 4, 5, 6, 7].includes(
           Object.keys(collections)[Object.keys(collections).length - 1]
         )
       ) {
@@ -314,7 +316,7 @@ fetch("/coordinates")
           collections[value].options.set("visible", true);
         });
 
-        document
+      document
         .querySelector(".selectorFav")
         .addEventListener("change", function () {
           var value = getCheckedValues();

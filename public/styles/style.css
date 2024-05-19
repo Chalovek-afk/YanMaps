@@ -153,6 +153,10 @@ form {
 form input[type=text]{
     font-size: 18px;
 }
+form input[type=number]{
+  font-size: 22px;
+  width: 105%;
+}
 
 #button_wrapper {
   display: grid;

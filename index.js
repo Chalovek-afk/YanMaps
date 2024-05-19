@@ -49,9 +49,18 @@ app.put("/users", async (req, res) => {
 app.post("/get_rec", async (req, res) => {
   var paths;
   if (req.body.paths) paths = req.body.paths;
-  var result = await Markers.findAll({
-    where: { pathId: paths, review: { [Op.gte]: req.body.rates } },
-  });
+  {
+    if (req.body.rates == "1") {
+      var result = await Markers.findAll({
+        where: { pathId: paths},
+      });
+    } else {
+      var result = await Markers.findAll({
+        where: { pathId: paths, review: { [Op.gte]: req.body.rates } },
+      });
+    }
+  }
+
   res.json(result);
 });
 
@@ -279,7 +288,7 @@ app.post("/markers", async (req, res) => {
         Markers.create({
           ltd: req.body.ltd,
           lng: req.body.lng,
-          pathId: usId + 4,
+          pathId: usId + 7,
           userId: usId,
           desc: req.body.desc,
           address: req.body.addr,
@@ -290,7 +299,7 @@ app.post("/markers", async (req, res) => {
         Markers.create({
           ltd: req.body.ltd,
           lng: req.body.lng,
-          pathId: 4,
+          pathId: 7,
           userId: usId,
           desc: req.body.desc,
           address: req.body.addr,

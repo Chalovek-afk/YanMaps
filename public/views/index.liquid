@@ -18,7 +18,7 @@
         <div id="map"></div>
         <div id="button_wrapper">
           <button id="get_recs">Рекомендации</button>
-          <button id="add_route">Добавить маршрут</button>
+          <button id="add_route">Добавить маркер</button>
         </div>
         <div id="warning"></div>
       </div>
@@ -27,7 +27,6 @@
           <div id="sel">
             <button id="all">Все маршруты</button>
             <button id="fav">Избранные</button>
-            <button id="myAdd">Мои расширенные</button>
           </div>
           <div id="user_info">
             <div id="username">{{ name }} {{ surname }}<br>{{ addr }}</div>
@@ -43,10 +42,10 @@
             <input
               type="radio"
               class="check"
-              id="checkbox5"
+              id="checkbox8"
               name="radio"
-              value="5" />
-            <label for="checkbox5">Мои места</label>
+              value="8" />
+            <label for="checkbox8">Мои места</label>
           </div>
           <div class="clickable">
             <input
@@ -61,7 +60,9 @@
               id="checkbox1"
               name="radio"
               value="1" />
-            <label for="checkbox1">Чеховские места</label>
+            <label for="checkbox1">Памятные места известных личностей <br>
+              <span style="font-size: 18px; font-weigth: 200">Памятники и музеи изветных людей, проживавших и бывавших в Таганроге</span>
+            </label>
           </div>
           <div class="clickable">
             <input
@@ -76,7 +77,9 @@
               id="checkbox2"
               name="radio"
               value="2" />
-            <label for="checkbox2">Музеи</label>
+            <label for="checkbox2">История Таганрог<br>
+              <span style="font-size: 18px; font-weigth: 200">Музеи, посвященные истории города Таганрога</span>
+            </label>
           </div>
           <div class="clickable">
             <input
@@ -91,16 +94,70 @@
               id="checkbox3"
               name="radio"
               value="3" />
-            <label for="checkbox3">Активный отдых</label>
+            <label for="checkbox3">Военные памятники ВОВ<br>
+              <span style="font-size: 18px; font-weigth: 200">Таганрогские памятники и музеи посвященные Великой Отечественной войне</span>
+            </label>
           </div>
           <div class="clickable">
+            <input
+              type="checkbox"
+              id="heartCheckbox4"
+              class="heart-checkbox"
+              value="4">
+            <label for="heartCheckbox4" class="heart-label"></label>
             <input
               type="radio"
               class="check"
               id="checkbox4"
               name="radio"
               value="4" />
-            <label for="checkbox4">Рекомендации пользователей</label>
+            <label for="checkbox4">Музеи<br>
+              <span style="font-size: 18px; font-weigth: 200">В данном маршруте предлагается посетить популярные музеи Таганрога</span>
+            </label>
+          </div>
+          <div class="clickable">
+            <input
+              type="checkbox"
+              id="heartCheckbox5"
+              class="heart-checkbox"
+              value="5">
+            <label for="heartCheckbox5" class="heart-label"></label>
+            <input
+              type="radio"
+              class="check"
+              id="checkbox5"
+              name="radio"
+              value="5" />
+            <label for="checkbox5">Путь А.П. Чехова<br>
+              <span style="font-size: 18px; font-weigth: 200">В данном маршруте Вы можете ознакомиться с жизнью Антона Павловича Чехова от рождения до юности, узнать, как жил классик мировой литературы до того, как стал известным.</span>
+            </label>
+          </div>
+          <div class="clickable">
+            <input
+              type="checkbox"
+              id="heartCheckbox6"
+              class="heart-checkbox"
+              value="6">
+            <label for="heartCheckbox6" class="heart-label"></label>
+            <input
+              type="radio"
+              class="check"
+              id="checkbox6"
+              name="radio"
+              value="6" />
+            <label for="checkbox5">Красивые прогулки<br>
+              <span style="font-size: 18px; font-weigth: 200">Прогуляйтесь по самым красивым местам Таганрога</span>
+            </label>
+          </div>
+          <div class="clickable">
+            <input
+              type="radio"
+              class="check"
+              id="checkbox7"
+              name="radio"
+              value="7" />
+            <label for="checkbox7">Рекомендации пользователей
+            </label>
           </div>
         </fieldset>
       </div>
@@ -117,7 +174,7 @@
                 id="mySelect"
                 class="minimal"
                 name="select">
-                <option value="1">Добавить в свой маршрут</option>
+                <option value="1">Добавить в свой места</option>
                 <option value="2">Добавить рекомендуемое место (будет видно всем)</option>
               </select>
               Адрес: <input
@@ -185,7 +242,7 @@
                   name="getRating"
                   required>
                   <option value="1">
-                    Любая
+                    Любой
                   </option>
                   <option value="2">2+ звезды</option>
                   <option value="3">3+ звезды</option>
@@ -197,7 +254,7 @@
                   type="number"
                   name="recRadius"
                   id="recRadius"
-                  placeholder="Введите размер в километрах"
+                  placeholder="Введите радиус в километрах"
                   disabled>
                 <button type="button" id="getRad">Поиск по радиусу</button>
               </div>
@@ -211,7 +268,7 @@
                   id="check1"
                   name="check1"
                   value="1" />
-                <label for="check1">Чеховские места</label>
+                <label for="check1">Памятные места известных личностей</label>
               </div>
               <div class="clickableRec">
                 <input
@@ -220,7 +277,7 @@
                   id="check2"
                   name="check2"
                   value="2" />
-                <label for="check2">Музеи</label>
+                <label for="check2">История Таганрог</label>
               </div>
               <div class="clickableRec">
                 <input
@@ -229,7 +286,34 @@
                   id="check3"
                   name="check3"
                   value="3" />
-                <label for="check3">Активный отдых</label>
+                <label for="check3">Военные памятники ВОВ</label>
+              </div>
+              <div class="clickableRec">
+                <input
+                  type="checkbox"
+                  class="box"
+                  id="check4"
+                  name="check4"
+                  value="4" />
+                <label for="check4">Музеи</label>
+              </div>
+              <div class="clickableRec">
+                <input
+                  type="checkbox"
+                  class="box"
+                  id="check5"
+                  name="check5"
+                  value="5" />
+                <label for="check5">Путь А.П. Чехова</label>
+              </div>
+              <div class="clickableRec">
+                <input
+                  type="checkbox"
+                  class="box"
+                  id="check6"
+                  name="check6"
+                  value="6" />
+                <label for="check6">Красивые прогулки</label>
               </div>
             </fieldset>
             <button type="submit" id="find">Найти</button>
