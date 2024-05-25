@@ -26,9 +26,11 @@ document.getElementById("all").addEventListener("click", () => {
   document.getElementById("selector").classList.remove("hidden");
   document.querySelector(".selectorFav").innerHTML = "";
   document.querySelector(".selectorFav").style.display = "none";
+  document.getElementById("fav").disabled = false;
 });
 
 document.getElementById("fav").addEventListener("click", () => {
+  document.getElementById("fav").disabled = true;
   document.getElementById("selector").classList.add("hidden");
   let cont = document.querySelector(".selectorFav");
   let places = document.querySelectorAll(".heart-checkbox");
@@ -38,7 +40,10 @@ document.getElementById("fav").addEventListener("click", () => {
     newPlaces.push(plc);
   });
   newPlaces.forEach((place) => {
-    if (place.querySelector(".heart-checkbox").checked) cont.appendChild(place);
+    if (place.querySelector(".heart-checkbox").checked) {
+      cont.appendChild(place);
+      place.querySelector(".heart-checkbox").disabled = true;
+    }
   });
   cont.style.display = "block";
   let checks = cont.querySelectorAll(".clickable");
@@ -66,6 +71,7 @@ document.querySelectorAll(".heart-checkbox").forEach((elem) => {
   elem.addEventListener("change", () => {
     let places = document.querySelectorAll(".heart-checkbox");
     let hearts = [];
+    console.log(1);
     places.forEach((place) => {
       if (place.checked) {
         hearts.push(+place.value);
@@ -179,6 +185,7 @@ fetch("/coordinates")
         (acc[key] = acc[key] || []).push(obj);
         return acc;
       }, {});
+      console.log(dividedArray);
       var collections = {};
 
       for (key of Object.keys(dividedArray)) {
@@ -219,7 +226,6 @@ fetch("/coordinates")
               cont.appendChild(mark);
             }
             place.insertBefore(cont, cls);
-
             fetch("/reviews")
               .then((response) => response.json())
               .then((res) => {
@@ -232,7 +238,6 @@ fetch("/coordinates")
                       site.textContent = `${elem.address}, "${elem.desc}"`;
                       let mark = document.createElement("h2");
                       mark.textContent = `Оценка пользователя: ${rev.mark}`;
-                      let markAvg = document.createElement("h2");
                       let text = document.createElement("p");
                       text.textContent = `Комментарий: ${rev.text}`;
                       let usr = document.createElement("h2");
@@ -254,7 +259,7 @@ fetch("/coordinates")
                 .then((user) => {
                   if (document.getElementById("secret")) {
                     if (
-                      user.id + 4 ===
+                      user.id + 7 ===
                       coordinates[
                         +document.getElementById("secret").textContent
                       ].pathId
@@ -287,18 +292,12 @@ fetch("/coordinates")
               }, 700);
             });
           });
+          if (key > 7) {
+            collections[key].options.set("preset", "islands#blueDotIcon");
+          }
           collections[key].add(placemark);
         }
         myMap.geoObjects.add(collections[key]);
-      }
-      if (
-        ![1, 2, 3, 4, 5, 6, 7].includes(
-          Object.keys(collections)[Object.keys(collections).length - 1]
-        )
-      ) {
-        collections[
-          Object.keys(collections)[Object.keys(collections).length - 1]
-        ].options.set("preset", "islands#blueDotIcon");
       }
 
       document
@@ -495,7 +494,10 @@ fetch("/coordinates")
         document.getElementById("addr").value = "";
         document.getElementById("desc").value = "";
         myMap.geoObjects.remove(placemark);
-        window.location.reload();
+        setTimeout(function () {
+          window.location.reload();
+        }, 700)
+        
       });
 
       document.getElementById("add_route").addEventListener("click", () => {

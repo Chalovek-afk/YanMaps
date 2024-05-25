@@ -216,7 +216,6 @@ app.get("/", auth, async (req, res) => {
       model = {
         name: user.name,
         surname: user.surname,
-        key: process.env.KEY,
       };
     } else if (user.name) {
       model = {
@@ -227,6 +226,7 @@ app.get("/", auth, async (req, res) => {
         name: user.username,
       };
     }
+    model['userId'] = user.id + 7
     model["addr"] = user.geo;
     Review.findAll({
       attributes: [
