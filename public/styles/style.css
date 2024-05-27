@@ -340,10 +340,10 @@ select.minimal:focus {
   border: 1px solid #888;
   width: 80%;
   max-width: 600px;
-  height: 60%;
+  height: 80%;
   position: fixed;
   left: 33%;
-  bottom: 1.5%;
+  top: -250px;
 }
 
 /* Стили для формы */

@@ -157,9 +157,6 @@ checks.forEach((check) => {
   });
 });
 
-closeModal.addEventListener("click", () => {
-  modal.style.display = "none";
-});
 
 window.addEventListener("click", function (event) {
   if (event.target == modal) {

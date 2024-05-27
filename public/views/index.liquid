@@ -40,14 +40,14 @@
         <fieldset class="selectorFav"></fieldset>
         <fieldset id="selector">
           {% comment %} <div class="clickable">
-                                    <input
-                                      type="radio"
-                                      class="check"
-                                      id="checkbox8"
-                                      name="radio"
-                                      value="{{userId}}" />
-                                    <label for="checkbox8">Мои места</label>
-                              </div> {% endcomment %}
+                                                            <input
+                                                              type="radio"
+                                                              class="check"
+                                                              id="checkbox8"
+                                                              name="radio"
+                                                              value="{{userId}}" />
+                                                            <label for="checkbox8">Мои места</label>
+                                                  </div> {% endcomment %}
           <div class="clickable">
             <input
               type="checkbox"
@@ -151,47 +151,47 @@
             </label>
           </div>
         {% comment %} <div class="clickable">
-                      <input
-                        type="radio"
-                        class="check"
-                        id="checkbox7"
-                        name="radio"
-                        value="7" />
-                      <label for="checkbox7">Рекомендации пользователей
-                      </label>
-                  </div> {% endcomment %}
+                                          <input
+                                            type="radio"
+                                            class="check"
+                                            id="checkbox7"
+                                            name="radio"
+                                            value="7" />
+                                          <label for="checkbox7">Рекомендации пользователей
+                                          </label>
+                                  </div> {% endcomment %}
         </fieldset>
       </div>
-      {% comment %} <div id="modal" class="modal">
-                <div class="modal-content">
-                  <span class="close" id="closeModal">&times;</span>
-                  <form
-                    action="/markers"
-                    method="post"
-                    id="new_mark">
-                    <fieldset>
-                      <legend>Добавьте свой маркер:</legend>
-                      <select
-                        id="mySelect"
-                        class="minimal"
-                        name="select">
-                        <option value="1">Добавить в свой места</option>
-                        <option value="2">Добавить рекомендуемое место (будет видно всем)</option>
-                      </select>
-                      Адрес: <input
-                        type="text"
-                        name="addr"
-                        id="addr">
-                      Описание: <input
-                        type="text"
-                        name="desc"
-                        id="desc">
-                      <button type="submit" value="add">Добавить</button>
-                    </fieldset>
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <span class="close" id="closeModal">&times;</span>
+          <form
+            action="/markers"
+            method="post"
+            id="new_mark">
+            <fieldset>
+              <legend>Добавьте свой маркер:</legend>
+              <select
+                id="mySelect"
+                class="minimal"
+                name="select">
+                <option value="1">Добавить в свой места</option>
+                <option value="2">Добавить рекомендуемое место (будет видно всем)</option>
+              </select>
+              Адрес: <input
+                type="text"
+                name="addr"
+                id="addr">
+              Описание: <input
+                type="text"
+                name="desc"
+                id="desc">
+              <button type="submit" value="add">Добавить</button>
+            </fieldset>
 
-                  </form>
-                </div>
-            </div> {% endcomment %}
+          </form>
+        </div>
+      </div>
 
       <div id="customModal" class="custom-modal">
         <div class="custom-modal-content">
