@@ -52,7 +52,7 @@ app.post("/get_rec", async (req, res) => {
   {
     if (req.body.rates == "1") {
       var result = await Markers.findAll({
-        where: { pathId: paths},
+        where: { pathId: paths },
       });
     } else {
       var result = await Markers.findAll({
@@ -121,6 +121,16 @@ app.get("/my_reviews", async (req, res) => {
     },
   });
   res.json(reviews);
+});
+
+app.get("/get_recom", async (req, res) => {
+  const markers = await Markers.findAll({
+    order: [
+      ["review", "ASC"], // Замените 'propertyName' на свойство, по которому вы хотите отсортировать данные
+    ],
+  });
+
+  res.json(markers);
 });
 
 app.get("/coordinates", async (req, res) => {
@@ -226,7 +236,7 @@ app.get("/", auth, async (req, res) => {
         name: user.username,
       };
     }
-    model['userId'] = user.id + 7
+    model["userId"] = user.id + 7;
     model["addr"] = user.geo;
     Review.findAll({
       attributes: [

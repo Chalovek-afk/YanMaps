@@ -17,8 +17,9 @@
       <div id="left_side">
         <div id="map"></div>
         <div id="button_wrapper">
-          <button id="get_recs">Рекомендации</button>
-          <button id="add_route">Добавить маркер</button>
+          <button id="get_recs">Поиск</button>
+          {% comment %} <button id="add_route">Добавить маркер</button> {% endcomment %}
+          <button id="rec">Получить рекомендацию</button>
         </div>
         <div id="warning"></div>
       </div>
@@ -254,7 +255,7 @@
                   type="number"
                   name="recRadius"
                   id="recRadius"
-                  placeholder="Введите радиус в километрах"
+                  placeholder="Введите радиус в метрах"
                   disabled>
                 <button type="button" id="getRad">Поиск по радиусу</button>
               </div>

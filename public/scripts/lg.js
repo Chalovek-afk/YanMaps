@@ -39,7 +39,6 @@ checks.forEach((check) => {
   });
 });
 
-
 fetch("/coordinates")
   .then((response) => response.json())
   .then((coordinates) => {
@@ -73,24 +72,39 @@ fetch("/coordinates")
           });
           placemark.events.add("click", function (e) {
             // Получаем ID метки
-            var id = e.get("target").properties.get("id");
+            let id = e.get("target").properties.get("id");
             // Открываем модальное окно с ID метки
             document.getElementById("customModal").style.display = "block";
             let place = document.querySelector(".custom-modal-content");
             let cls = document.getElementById("mdlClose");
             let cont = document.createElement("div");
             cont.id = "delCont";
+            let secret = document.createElement("span");
+            secret.style.opacity = "0";
+            secret.textContent = id;
+            secret.id = "secret";
             let site = document.createElement("p");
             site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
+            let desc = document.createElement("p");
+            desc.innerHTML = coordinates[id].fullDesc;
             cont.appendChild(site);
-            if (coordinates[id].review){ 
+            cont.appendChild(secret);
+            cont.appendChild(desc);
+            if (coordinates[id].schedule) {
+              let schedule = document.createElement("p");
+              schedule.innerHTML = "Время работы: " + coordinates[id].schedule;
+              cont.appendChild(schedule);
+            }
+            if (coordinates[id].review) {
               let mark = document.createElement("p");
-              mark.textContent = `Рейтинг: ${coordinates[id].review.toFixed(2)}`;
+              mark.textContent = `Рейтинг: ${coordinates[id].review.toFixed(
+                2
+              )}`;
               cont.appendChild(mark);
-              }
+            }
             place.insertBefore(cont, cls);
           });
-          collections[key].add(placemark)
+          collections[key].add(placemark);
         }
         myMap.geoObjects.add(collections[key]);
       }
@@ -100,8 +114,8 @@ fetch("/coordinates")
           var value = getCheckedValues();
           var checks = document.querySelectorAll(".clickable");
           checks.forEach((check) => {
-            check.classList.remove('selected')
-          })
+            check.classList.remove("selected");
+          });
           for (key of Object.keys(collections)) {
             collections[key].options.set("visible", false);
           }

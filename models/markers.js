@@ -30,6 +30,14 @@ const Markers = sequelize.define("markers", {
     type: DataTypes.BOOLEAN,
     allowNull: false,
   },
+  fullDesc: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  schedule: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }
 });
 
 
