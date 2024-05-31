@@ -5,6 +5,10 @@ function exitModal() {
       node.remove();
     });
   }
+  if (document.querySelector("#IDK")) {
+    document.querySelector("#IDK").remove();
+    document.getElementById("modal").style.display = "none";
+  }
   if (document.querySelector("#secret"))
     document.querySelector("#secret").remove();
   if (document.getElementById("delCont"))
@@ -18,6 +22,8 @@ window.onclick = function (event) {
   if (event.target == document.getElementById("customModal")) {
     exitModal();
   } else if (event.target == document.getElementById("recomendat")) {
+    exitModal();
+  } else if (event.target == document.getElementById("modal")) {
     exitModal();
   }
 };
@@ -71,7 +77,6 @@ document.querySelectorAll(".heart-checkbox").forEach((elem) => {
   elem.addEventListener("change", () => {
     let places = document.querySelectorAll(".heart-checkbox");
     let hearts = [];
-    console.log(1);
     places.forEach((place) => {
       if (place.checked) {
         hearts.push(+place.value);
@@ -157,7 +162,6 @@ checks.forEach((check) => {
   });
 });
 
-
 window.addEventListener("click", function (event) {
   if (event.target == modal) {
     modal.style.display = "none";
@@ -222,125 +226,252 @@ fetch("/coordinates")
         var collections = {};
 
         for (key of Object.keys(dividedArray)) {
-          collections[key] = new ymaps.GeoObjectCollection(
-            {},
-            {
-              preset: "islands#redDotIcon",
-              visible: false,
-            }
-          );
-          for (elem of dividedArray[key]) {
-            let placemark = new ymaps.Placemark([elem.ltd, elem.lng], {
-              hintContent: `"${elem.desc}"\n${elem.address}`,
-              id: elem.id,
-            });
-            placemark.events.add("click", function (e) {
-              // Получаем ID метки
-              let id = e.get("target").properties.get("id");
-              // Открываем модальное окно с ID метки
-              document.getElementById("customModal").style.display = "block";
-              let place = document.querySelector(".custom-modal-content");
-              let cls = document.getElementById("mdlClose");
-              let cont = document.createElement("div");
-              cont.id = "delCont";
-              let secret = document.createElement("span");
-              secret.style.opacity = "0";
-              secret.textContent = id;
-              secret.id = "secret";
-              let site = document.createElement("p");
-              site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
-              let desc = document.createElement("p");
-              desc.innerHTML = coordinates[id].fullDesc;
-              cont.appendChild(site);
-              cont.appendChild(secret);
-              cont.appendChild(desc);
-              if (coordinates[id].schedule) {
-                let schedule = document.createElement("p");
-                schedule.innerHTML =
-                  "Время работы: " + coordinates[id].schedule;
-                cont.appendChild(schedule);
+          if (key > 7) {
+            collections[key] = new ymaps.GeoObjectCollection(
+              {},
+              {
+                preset: "islands#blueIcon",
+                visible: false,
               }
-              if (coordinates[id].review) {
-                let mark = document.createElement("p");
-                mark.textContent = `Рейтинг: ${coordinates[id].review.toFixed(
-                  2
-                )}`;
-                cont.appendChild(mark);
-              }
-              place.insertBefore(cont, cls);
-              fetch("/reviews")
-                .then((response) => response.json())
-                .then((res) => {
-                  for (elem of res) {
-                    if (elem.id === id) {
-                      for (rev of elem.reviews) {
-                        let container = document.createElement("div");
-                        container.classList.add("reviewNode");
-                        let site = document.createElement("p");
-                        site.textContent = `${elem.address}, "${elem.desc}"`;
-                        let mark = document.createElement("h2");
-                        mark.textContent = `Оценка пользователя: ${rev.mark}`;
-                        let text = document.createElement("p");
-                        text.textContent = `Комментарий: ${rev.text}`;
-                        let usr = document.createElement("h2");
-                        usr.textContent = `${rev.user.username}: `;
-                        container.appendChild(site);
-                        container.appendChild(mark);
-                        container.appendChild(usr);
-                        container.appendChild(text);
-                        document
-                          .getElementById("revCont")
-                          .appendChild(container);
-                      }
-                    }
-                  }
-                });
-              var review_form = document.querySelector(".custom-modal-form");
-              review_form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                await fetch("/users")
+            );
+            counter = 1;
+            for (elem of dividedArray[key]) {
+              let placemark = new ymaps.Placemark([elem.ltd, elem.lng], {
+                hintContent: `"${elem.desc}"\n${elem.address}`,
+                id: elem.id,
+                iconContent: counter,
+              });
+              counter += 1;
+              placemark.events.add("click", function (e) {
+                // Получаем ID метки
+                let id = e.get("target").properties.get("id");
+                // Открываем модальное окно с ID метки
+                document.getElementById("customModal").style.display = "block";
+                let place = document.querySelector(".custom-modal-content");
+                let cls = document.getElementById("mdlClose");
+                let cont = document.createElement("div");
+                cont.id = "delCont";
+                let secret = document.createElement("span");
+                secret.style.opacity = "0";
+                secret.textContent = id;
+                secret.id = "secret";
+                let site = document.createElement("p");
+                site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
+                let desc = document.createElement("p");
+                desc.innerHTML = coordinates[id].fullDesc;
+                cont.appendChild(site);
+                cont.appendChild(secret);
+                cont.appendChild(desc);
+                if (coordinates[id].schedule) {
+                  let schedule = document.createElement("p");
+                  schedule.innerHTML =
+                    "Время работы: " + coordinates[id].schedule;
+                  cont.appendChild(schedule);
+                }
+                if (coordinates[id].review) {
+                  let mark = document.createElement("p");
+                  mark.textContent = `Рейтинг: ${coordinates[id].review.toFixed(
+                    2
+                  )}`;
+                  cont.appendChild(mark);
+                }
+                place.insertBefore(cont, cls);
+                fetch("/reviews")
                   .then((response) => response.json())
-                  .then((user) => {
-                    if (document.getElementById("secret")) {
-                      if (
-                        user.id + 7 ===
-                        coordinates[
-                          +document.getElementById("secret").textContent
-                        ].pathId
-                      ) {
-                        document.getElementById("warning").textContent =
-                          "Нельзя оставлять отзывы на свои метки";
-                        return;
+                  .then((res) => {
+                    for (elem of res) {
+                      if (elem.id === id) {
+                        for (rev of elem.reviews) {
+                          let container = document.createElement("div");
+                          container.classList.add("reviewNode");
+                          let site = document.createElement("p");
+                          site.textContent = `${elem.address}, "${elem.desc}"`;
+                          let mark = document.createElement("h2");
+                          mark.textContent = `Оценка пользователя: ${rev.mark}`;
+                          let text = document.createElement("p");
+                          text.textContent = `Комментарий: ${rev.text}`;
+                          let usr = document.createElement("h2");
+                          usr.textContent = `${rev.user.username}: `;
+                          container.appendChild(site);
+                          container.appendChild(mark);
+                          container.appendChild(usr);
+                          container.appendChild(text);
+                          document
+                            .getElementById("revCont")
+                            .appendChild(container);
+                        }
                       }
-
-                      document.getElementById("warning").textContent = "";
-                      var xhr = new XMLHttpRequest();
-                      xhr.open("POST", "/review", true);
-                      xhr.setRequestHeader("Content-Type", "application/json");
-                      var dataToSend = {
-                        mark: document.getElementById("rating").value,
-                        text: document.getElementById("comment").value,
-                        markerId:
-                          +document.getElementById("secret").textContent,
-                      };
-                      xhr.send(JSON.stringify(dataToSend));
                     }
                   });
-                document.getElementById("rating").value = 1;
-                document.getElementById("comment").value = "";
-                if (document.getElementById("delCont"))
-                  document.getElementById("delCont").remove();
-                var modal = document.getElementById("customModal");
-                modal.style.display = "none";
-                setTimeout(function () {
-                  window.location.reload();
-                }, 700);
+                var review_form = document.querySelector(".custom-modal-form");
+                review_form.addEventListener("submit", async (e) => {
+                  e.preventDefault();
+                  await fetch("/users")
+                    .then((response) => response.json())
+                    .then((user) => {
+                      if (document.getElementById("secret")) {
+                        if (
+                          user.id + 7 ===
+                          coordinates[
+                            +document.getElementById("secret").textContent
+                          ].pathId
+                        ) {
+                          document.getElementById("warning").textContent =
+                            "Нельзя оставлять отзывы на свои метки";
+                          return;
+                        }
+
+                        document.getElementById("warning").textContent = "";
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "/review", true);
+                        xhr.setRequestHeader(
+                          "Content-Type",
+                          "application/json"
+                        );
+                        var dataToSend = {
+                          mark: document.getElementById("rating").value,
+                          text: document.getElementById("comment").value,
+                          markerId:
+                            +document.getElementById("secret").textContent,
+                        };
+                        xhr.send(JSON.stringify(dataToSend));
+                      }
+                    });
+                  document.getElementById("rating").value = 1;
+                  document.getElementById("comment").value = "";
+                  if (document.getElementById("delCont"))
+                    document.getElementById("delCont").remove();
+                  var modal = document.getElementById("customModal");
+                  modal.style.display = "none";
+                  setTimeout(function () {
+                    window.location.reload();
+                  }, 700);
+                });
               });
-            });
-            if (key > 7) {
-              collections[key].options.set("preset", "islands#blueDotIcon");
+              collections[key].add(placemark);
             }
-            collections[key].add(placemark);
+          } else {
+            collections[key] = new ymaps.GeoObjectCollection(
+              {},
+              {
+                preset: "islands#redDotIcon",
+                visible: false,
+              }
+            );
+
+            for (elem of dividedArray[key]) {
+              let placemark = new ymaps.Placemark([elem.ltd, elem.lng], {
+                hintContent: `"${elem.desc}"\n${elem.address}`,
+                id: elem.id,
+              });
+              placemark.events.add("click", function (e) {
+                // Получаем ID метки
+                let id = e.get("target").properties.get("id");
+                // Открываем модальное окно с ID метки
+                document.getElementById("customModal").style.display = "block";
+                let place = document.querySelector(".custom-modal-content");
+                let cls = document.getElementById("mdlClose");
+                let cont = document.createElement("div");
+                cont.id = "delCont";
+                let secret = document.createElement("span");
+                secret.style.opacity = "0";
+                secret.textContent = id;
+                secret.id = "secret";
+                let site = document.createElement("p");
+                site.textContent = `${coordinates[id].address}, "${coordinates[id].desc}"`;
+                let desc = document.createElement("p");
+                desc.innerHTML = coordinates[id].fullDesc;
+                cont.appendChild(site);
+                cont.appendChild(secret);
+                cont.appendChild(desc);
+                if (coordinates[id].schedule) {
+                  let schedule = document.createElement("p");
+                  schedule.innerHTML =
+                    "Время работы: " + coordinates[id].schedule;
+                  cont.appendChild(schedule);
+                }
+                if (coordinates[id].review) {
+                  let mark = document.createElement("p");
+                  mark.textContent = `Рейтинг: ${coordinates[id].review.toFixed(
+                    2
+                  )}`;
+                  cont.appendChild(mark);
+                }
+                place.insertBefore(cont, cls);
+                fetch("/reviews")
+                  .then((response) => response.json())
+                  .then((res) => {
+                    for (elem of res) {
+                      if (elem.id === id) {
+                        for (rev of elem.reviews) {
+                          let container = document.createElement("div");
+                          container.classList.add("reviewNode");
+                          let site = document.createElement("p");
+                          site.textContent = `${elem.address}, "${elem.desc}"`;
+                          let mark = document.createElement("h2");
+                          mark.textContent = `Оценка пользователя: ${rev.mark}`;
+                          let text = document.createElement("p");
+                          text.textContent = `Комментарий: ${rev.text}`;
+                          let usr = document.createElement("h2");
+                          usr.textContent = `${rev.user.username}: `;
+                          container.appendChild(site);
+                          container.appendChild(mark);
+                          container.appendChild(usr);
+                          container.appendChild(text);
+                          document
+                            .getElementById("revCont")
+                            .appendChild(container);
+                        }
+                      }
+                    }
+                  });
+                var review_form = document.querySelector(".custom-modal-form");
+                review_form.addEventListener("submit", async (e) => {
+                  e.preventDefault();
+                  await fetch("/users")
+                    .then((response) => response.json())
+                    .then((user) => {
+                      if (document.getElementById("secret")) {
+                        if (
+                          user.id + 7 ===
+                          coordinates[
+                            +document.getElementById("secret").textContent
+                          ].pathId
+                        ) {
+                          document.getElementById("warning").textContent =
+                            "Нельзя оставлять отзывы на свои метки";
+                          return;
+                        }
+
+                        document.getElementById("warning").textContent = "";
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "/review", true);
+                        xhr.setRequestHeader(
+                          "Content-Type",
+                          "application/json"
+                        );
+                        var dataToSend = {
+                          mark: document.getElementById("rating").value,
+                          text: document.getElementById("comment").value,
+                          markerId:
+                            +document.getElementById("secret").textContent,
+                        };
+                        xhr.send(JSON.stringify(dataToSend));
+                      }
+                    });
+                  document.getElementById("rating").value = 1;
+                  document.getElementById("comment").value = "";
+                  if (document.getElementById("delCont"))
+                    document.getElementById("delCont").remove();
+                  var modal = document.getElementById("customModal");
+                  modal.style.display = "none";
+                  setTimeout(function () {
+                    window.location.reload();
+                  }, 700);
+                });
+              });
+              collections[key].add(placemark);
+            }
           }
           myMap.geoObjects.add(collections[key]);
         }
@@ -462,7 +593,7 @@ fetch("/coordinates")
                   ]);
                   return distance <= radius;
                 });
-
+                let route = [];
                 recs = new ymaps.GeoObjectCollection(
                   {},
                   {
@@ -471,13 +602,52 @@ fetch("/coordinates")
                   }
                 );
                 filteredMarkers.forEach((marker) => {
-                  var placemark = new ymaps.Placemark(
+                  let placemark = new ymaps.Placemark(
                     [marker.ltd, marker.lng],
                     {
                       hintContent: `"${marker.desc}"\n${marker.address}`,
                       id: marker.id,
                     }
                   );
+                  var markerData;
+                  placemark.events.add("click", (e) => {
+                    let id = e.get("target").properties.get("id");
+                    fetch(`http://localhost:3000/marker/${id}`) // Укажите правильный URL вашего сервера
+                      .then((response) => {
+                        if (!response.ok) {
+                          throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                      })
+                      .then((data) => {
+                        markerData = data;
+                        document.getElementById("warning").textContent = "";
+                        let modal = document.getElementById("modal");
+                        modal.style.display = "block";
+                        let cnt = document.createElement("div");
+                        cnt.id = "IDK";
+                        let frm = document.getElementById("new_mark");
+                        let desc = document.createElement("p");
+                        desc.textContent = data.desc;
+                        let address = document.createElement("p");
+                        address.textContent = data.address;
+                        let fd = document.createElement("p");
+                        fd.textContent = elem.fullDesc;
+                        let btn = frm.querySelector("button");
+                        cnt.appendChild(desc);
+                        cnt.appendChild(address);
+                        cnt.appendChild(fd);
+                        frm.insertBefore(cnt, btn);
+                      })
+                      .catch((error) => {
+                        console.error(
+                          "Ошибка при получении данных маркера:",
+                          error
+                        );
+                        alert("Ошибка при получении данных маркера");
+                      });
+                  });
+
                   recs.add(placemark);
                 });
               } else {
@@ -493,8 +663,60 @@ fetch("/coordinates")
                     hintContent: `"${elem.desc}"\n${elem.address}`,
                     id: elem.id,
                   });
+                  var markerData;
+                  placemark.events.add("click", (e) => {
+                    let id = e.get("target").properties.get("id");
+                    fetch(`http://localhost:3000/marker/${id}`) // Укажите правильный URL вашего сервера
+                      .then((response) => {
+                        if (!response.ok) {
+                          throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                      })
+                      .then((data) => {
+                        markerData = data;
+                        document.getElementById("warning").textContent = "";
+                        let modal = document.getElementById("modal");
+                        modal.style.display = "block";
+                        let cnt = document.createElement("div");
+                        cnt.id = "IDK";
+                        let frm = document.getElementById("new_mark");
+                        let desc = document.createElement("p");
+                        desc.textContent = data.desc;
+                        let address = document.createElement("p");
+                        address.textContent = data.address;
+                        let fd = document.createElement("p");
+                        fd.textContent = elem.fullDesc;
+                        let btn = frm.querySelector("button");
+                        cnt.appendChild(desc);
+                        cnt.appendChild(address);
+                        cnt.appendChild(fd);
+                        frm.insertBefore(cnt, btn);
+                        frm.insertBefore(cnt, btn);
+                      })
+                      .catch((error) => {
+                        console.error(
+                          "Ошибка при получении данных маркера:",
+                          error
+                        );
+                        alert("Ошибка при получении данных маркера");
+                      });
+                  });
+
                   recs.add(placemark);
                 }
+                let frm = document.getElementById("new_mark");
+                frm.addEventListener("submit", function (event) {
+                  // Отменяем отправку формы по умолчанию
+                  event.preventDefault();
+                  // Отправляем данные с помощью AJAX запроса
+                  var xhr = new XMLHttpRequest();
+                  xhr.open("POST", "/markers", true);
+                  xhr.setRequestHeader("Content-Type", "application/json");
+                  markerData.isPrivate = true;
+                  xhr.send(JSON.stringify(markerData));
+                  exitModal();
+                });
               }
 
               myMap.geoObjects.add(recs);
@@ -519,33 +741,33 @@ fetch("/coordinates")
             });
         });
 
-        var form = document.getElementById("new_mark");
-        // Добавляем обработчик события submit для формы
-        form.addEventListener("submit", function (event) {
-          // Отменяем отправку формы по умолчанию
-          event.preventDefault();
-          // Отправляем данные с помощью AJAX запроса
-          var xhr = new XMLHttpRequest();
-          xhr.open("POST", "/markers", true);
-          xhr.setRequestHeader("Content-Type", "application/json");
-          var dataToSend = {
-            isPrivate: document.getElementById("mySelect").value,
-            addr: document.getElementById("addr").value,
-            desc: document.getElementById("desc").value,
-            ltd: coords[0],
-            lng: coords[1],
-          };
-          xhr.send(JSON.stringify(dataToSend));
-          var modal = document.getElementById("modal");
-          modal.style.display = "none";
-          document.getElementById("mySelect").value = "1";
-          document.getElementById("addr").value = "";
-          document.getElementById("desc").value = "";
-          myMap.geoObjects.remove(placemark);
-          setTimeout(function () {
-            window.location.reload();
-          }, 700);
-        });
+        // var form = document.getElementById("new_mark");
+        // // Добавляем обработчик события submit для формы
+        // form.addEventListener("submit", function (event) {
+        //   // Отменяем отправку формы по умолчанию
+        //   event.preventDefault();
+        //   // Отправляем данные с помощью AJAX запроса
+        //   var xhr = new XMLHttpRequest();
+        //   xhr.open("POST", "/markers", true);
+        //   xhr.setRequestHeader("Content-Type", "application/json");
+        //   var dataToSend = {
+        //     isPrivate: document.getElementById("mySelect").value,
+        //     addr: document.getElementById("addr").value,
+        //     desc: document.getElementById("desc").value,
+        //     ltd: coords[0],
+        //     lng: coords[1],
+        //   };
+        //   xhr.send(JSON.stringify(dataToSend));
+        //   var modal = document.getElementById("modal");
+        //   modal.style.display = "none";
+        //   document.getElementById("mySelect").value = "1";
+        //   document.getElementById("addr").value = "";
+        //   document.getElementById("desc").value = "";
+        //   myMap.geoObjects.remove(placemark);
+        //   setTimeout(function () {
+        //     window.location.reload();
+        //   }, 700);
+        // });
 
         // document.getElementById("add_route").addEventListener("click", () => {
         //   if (!coords) {

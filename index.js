@@ -294,32 +294,25 @@ app.post("/markers", async (req, res) => {
   const user = Users.findOne({ where: { username: req.session.user } })
     .then((res) => {
       const usId = res.id;
-      if (req.body.isPrivate === "1") {
-        Markers.create({
-          ltd: req.body.ltd,
-          lng: req.body.lng,
-          pathId: usId + 7,
-          userId: usId,
-          desc: req.body.desc,
-          address: req.body.addr,
-          isPrivate: true,
-          rating: 0,
-        });
-      } else {
-        Markers.create({
-          ltd: req.body.ltd,
-          lng: req.body.lng,
-          pathId: 7,
-          userId: usId,
-          desc: req.body.desc,
-          address: req.body.addr,
-          isPrivate: false,
-          rating: 0,
-        });
-      }
+      Markers.create({
+        ltd: req.body.ltd,
+        lng: req.body.lng,
+        pathId: usId + 7,
+        userId: usId,
+        desc: req.body.desc,
+        address: req.body.address,
+        isPrivate: true,
+        fullDesc: req.body.fullDesc,
+        rating: 0,
+      });
     })
     .catch((err) => console.log(err));
   res.redirect("/");
+});
+
+app.get("/marker/:id", async (req, res) => {
+  const marker = await Markers.findByPk(req.params.id);
+  res.json(marker);
 });
 
 app.post("/review", async (req, res) => {
