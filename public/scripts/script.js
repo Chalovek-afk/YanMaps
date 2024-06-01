@@ -563,8 +563,12 @@ fetch("/coordinates")
           boxes.forEach((box) => {
             if (box.checked) arr.push(box.value);
           });
+          let new_arr = []
           if (arr.length > 0) {
-            dataToSend["paths"] = arr;
+            if (arr.includes('1')) new_arr.push(1, 3, 4)
+            if (arr.includes('2')) new_arr.push(2, 5)
+            if (arr.includes('3')) new_arr.push(6)
+            dataToSend["paths"] = new_arr;
           }
           dataToSend["rates"] = document.getElementById("getRating").value;
           let requestOptions = {
