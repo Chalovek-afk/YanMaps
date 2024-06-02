@@ -203,16 +203,21 @@ app.get("/logout", (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const user = await Users.findOne({ where: { username: req.body.username } });
-  if (
-    user.username == req.body.username &&
-    user.password == req.body.password
-  ) {
-    req.session.user = user.username;
-    res.redirect("/");
-    return;
+  try {
+    const user = await Users.findOne({
+      where: { username: req.body.username },
+    });
+    if (
+      user.username == req.body.username &&
+      user.password == req.body.password
+    ) {
+      req.session.user = user.username;
+      res.redirect("/");
+      return;
+    }
+  } catch (error) {
+    res.redirect("/login");
   }
-  res.redirect("/login");
 });
 
 app.get("/", auth, async (req, res) => {
