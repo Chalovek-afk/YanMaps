@@ -616,15 +616,18 @@ fetch("/coordinates")
                   var markerData;
                   placemark.events.add("click", (e) => {
                     let id = e.get("target").properties.get("id");
+                    console.log(id)
                     fetch(`http://localhost:3000/marker/${id}`) // Укажите правильный URL вашего сервера
                       .then((response) => {
                         if (!response.ok) {
+                          console.log(1)
                           throw new Error("Network response was not ok");
                         }
                         return response.json();
                       })
                       .then((data) => {
                         markerData = data;
+                        console.log(markerData)
                         document.getElementById("warning").textContent = "";
                         let modal = document.getElementById("modal");
                         modal.style.display = "block";
@@ -650,6 +653,18 @@ fetch("/coordinates")
                         );
                         alert("Ошибка при получении данных маркера");
                       });
+                  });
+                  let frm = document.getElementById("new_mark");
+                  frm.addEventListener("submit", function (event) {
+                    // Отменяем отправку формы по умолчанию
+                    event.preventDefault();
+                    // Отправляем данные с помощью AJAX запроса
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/markers", true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    markerData.isPrivate = true;
+                    xhr.send(JSON.stringify(markerData));
+                    exitModal();
                   });
 
                   recs.add(placemark);
